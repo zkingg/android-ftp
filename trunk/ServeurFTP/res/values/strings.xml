@@ -5,4 +5,9 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
 	<string name="prefs.port">Port du server</string>
+	<string name="acceuil.activer">Serveur FTP</string>
+	<string name="acceuil.connexion_annonyme">Authoriser connexion annonyme</string>
+	<string name="acceuil.explorateur_fichier">Voir FTP</string>
+	<string name="acceuil.gestion_compte">Gestion des comptes</string>
+	<string name="acceuil.liste_utilisateur_connectee">Liste des utilisateur connectées</string>
 </resources>

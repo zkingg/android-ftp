@@ -1,5 +1,7 @@
 package com.ftp.core;
 
+import java.net.ServerSocket;
+
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -9,6 +11,7 @@ public class ServerFTP {
 	private boolean run;
 	private int port;
 	private SharedPreferences prefs;
+	private ServerSocket server;
 	
 	public ServerFTP(SharedPreferences prefs){
 		this.prefs = prefs;

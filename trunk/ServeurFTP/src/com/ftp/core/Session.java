@@ -4,6 +4,12 @@ public class Session {
 	private String ip;
 	private String login;
 	
+	public Session(){}
+	
+	public Session(String login, String ip){
+		this.ip = ip;
+		this.login = login;
+	}
 	
 	public String getIp() {return ip;}
 	public void setIp(String ip) {this.ip = ip;	}

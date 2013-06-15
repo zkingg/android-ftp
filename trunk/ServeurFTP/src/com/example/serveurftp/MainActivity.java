@@ -1,6 +1,7 @@
 package com.example.serveurftp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.commons.net.ftp.FTPClient;
 
@@ -22,7 +23,7 @@ import com.ftp.core.ServerFTP;
 import com.ftp.core.Session;
 
 public class MainActivity extends Activity implements OnClickListener {
-	private ArrayList<Session> sessions;
+	private HashMap<String,Session> sessions;
 	private ServerFTP server;
 	private SharedPreferences prefs;
 
@@ -36,14 +37,16 @@ public class MainActivity extends Activity implements OnClickListener {
 		findViewById(R.id.button_gestion_compte).setOnClickListener(this);
 		
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		sessions = new ArrayList<Session>();
+		sessions = new HashMap<String,Session>();
 		server = new ServerFTP(prefs); 
-		Session s = new Session();
-		s.setIp("10.0.0.1");
-		s.setLogin("zkingg");
-		sessions.add(s);
-		
-		((ListView)findViewById(R.id.listViewSessions)).setAdapter(new SessionsAdapteur(this, sessions));		
+
+		addUserSession(new Session("Zkingg","10.0.0.1"));
+		addUserSession(new Session("Zkingg2","10.0.0.2"));		
+	}
+	
+	public void addUserSession(Session session){
+		this.sessions.put(session.getIp(),session);
+		((ListView)findViewById(R.id.listViewSessions)).setAdapter(new SessionsAdapteur(this, sessions));
 	}
 	
 	@Override

@@ -1,8 +1,8 @@
 package com.example.serveurftp;
 
-import java.util.ArrayList;
-
-import com.ftp.core.Session;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,11 +12,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.ftp.core.Session;
+
 public class SessionsAdapteur extends BaseAdapter {
-	private ArrayList<Session> sessions;
+	private HashMap<String,Session> sessions;
 	private Context context;
 	
-	public SessionsAdapteur(Context context, ArrayList<Session> sessions){
+	public SessionsAdapteur(Context context, HashMap<String,Session> sessions){
 		this.sessions = sessions;
 		this.context = context;
 	}
@@ -28,7 +30,7 @@ public class SessionsAdapteur extends BaseAdapter {
 
 	@Override
 	public Object getItem(int index) {
-		return sessions.get(index);
+		return getItemFromHashMap(index);
 	}
 
 	@Override
@@ -53,8 +55,8 @@ public class SessionsAdapteur extends BaseAdapter {
         else {
             holder = (ViewHolder) convertView.getTag();
         }
- 
-        Session session = this.sessions.get(position);
+        
+        Session session = getItemFromHashMap(position);
         holder.login.setText(session.getLogin());
         holder.ip.setText(session.getIp());
         
@@ -64,6 +66,19 @@ public class SessionsAdapteur extends BaseAdapter {
 	private class ViewHolder{
 		public TextView login;
 		public TextView ip;
+	}
+	
+	public Session getItemFromHashMap(int position){
+		Iterator<Entry<String, Session>> iterator = sessions.entrySet().iterator();
+		int i=0;
+		while(iterator.hasNext()){
+			Session session = (Session) iterator.next().getValue();
+			if(position == i)
+				return session;
+			
+			i++;
+		}
+		return null;
 	}
 
 }

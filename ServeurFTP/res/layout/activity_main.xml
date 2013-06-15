@@ -9,8 +9,78 @@
     tools:context=".MainActivity" >
 
     <TextView
+        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView1"
+        android:layout_marginTop="15dp"
+        android:text="@string/acceuil.connexion_annonyme"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <ToggleButton
+        android:id="@+id/toggleButton_annonyme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textView2"
+        android:layout_alignLeft="@+id/toggleButton_run_ftp"
+        android:layout_alignTop="@+id/textView2"
+        android:text="ToggleButton" />
+
+    <Button
+        android:id="@+id/button_exploreur_ftp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_alignRight="@+id/textView2"
+        android:layout_below="@+id/textView2"
+        android:layout_marginTop="20dp"
+        android:text="@string/acceuil.explorateur_fichier" />
+
+    <Button
+        android:id="@+id/button_gestion_compte"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button_exploreur_ftp"
+        android:layout_alignRight="@+id/button_exploreur_ftp"
+        android:layout_below="@+id/button_exploreur_ftp"
+        android:layout_marginTop="14dp"
+        android:text="@string/acceuil.gestion_compte" />
+
+    <ListView
+        android:id="@+id/listViewSessions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button_gestion_compte"
+        android:layout_below="@+id/button_gestion_compte"
+        android:layout_marginTop="32dp" >
+    </ListView>
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="24dp"
+        android:text="@string/acceuil.activer"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button_gestion_compte"
+        android:layout_below="@+id/button_gestion_compte"
+        android:text="@string/acceuil.liste_utilisateur_connectee"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <ToggleButton
+        android:id="@+id/toggleButton_run_ftp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/textView2"
+        android:layout_alignTop="@+id/textView1"
+        android:text="ToggleButton" />
 
 </RelativeLayout>

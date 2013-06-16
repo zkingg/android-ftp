@@ -1,4 +1,4 @@
-package com.example.serveurftp;
+package com.ftp.activity;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;

@@ -7,7 +7,8 @@ import java.util.HashMap;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
-import com.example.serveurftp.MainActivity;
+
+import com.ftp.activity.MainActivity;
 
 /**
  * Classe qui gère le serveur

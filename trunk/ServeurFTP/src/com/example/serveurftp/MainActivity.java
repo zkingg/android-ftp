@@ -1,13 +1,10 @@
 package com.example.serveurftp;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.apache.commons.net.ftp.FTPClient;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -16,42 +13,44 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
 import com.ftp.core.ServerFTP;
 import com.ftp.core.Session;
+import com.ftp.core.Utils;
 
+/**
+ * Activité principale
+ *
+ */
 public class MainActivity extends Activity implements OnClickListener {
-	private HashMap<String,Session> sessions;
 	private ServerFTP server;
 	private SharedPreferences prefs;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		findViewById(R.id.toggleButton_annonyme).setOnClickListener(this);
+		findViewById(R.id.toggleButton_anonyme).setOnClickListener(this);
 		findViewById(R.id.toggleButton_run_ftp).setOnClickListener(this);
 		findViewById(R.id.button_exploreur_ftp).setOnClickListener(this);
 		findViewById(R.id.button_gestion_compte).setOnClickListener(this);
 		
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		sessions = new HashMap<String,Session>();
-		server = new ServerFTP(prefs); 
-
-		addUserSession(new Session("Zkingg","10.0.0.1"));
-		addUserSession(new Session("Zkingg2","10.0.0.2"));		
+		server = new ServerFTP(this, prefs); 	
 	}
 	
-	public void addUserSession(Session session){
-		this.sessions.put(session.getIp(),session);
+	/**
+	 * Methode de mise a jour de la ListView
+	 * @param sessions : hashmap contenant les sessions a afficher
+	 */
+	public void refreshListSessions(HashMap<String,Session> sessions){
 		((ListView)findViewById(R.id.listViewSessions)).setAdapter(new SessionsAdapteur(this, sessions));
 	}
 	
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		if(server != null)
 			server.actualizePrefs();
 		
@@ -59,14 +58,12 @@ public class MainActivity extends Activity implements OnClickListener {
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// TODO Auto-generated method stub
 		Log.i("",R.id.action_settings+"="+item.getItemId());
 		switch(item.getItemId()){
 		case R.id.action_settings:
@@ -78,11 +75,9 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		//Toast.makeText(this, "salut", Toast.LENGTH_SHORT).show();
-
 		switch(v.getId()){
-		case R.id.toggleButton_annonyme:	
-			if(((ToggleButton)v).getText().equals("ON")){
+		case R.id.toggleButton_anonyme:	
+			if(((ToggleButton)v).getText().equals(getResources().getString(R.string.switch_on))){
 				//si activation serveur
 				Toast.makeText(this, "Connexion annonyme authorisé", Toast.LENGTH_SHORT).show();
 			}else{
@@ -92,16 +87,20 @@ public class MainActivity extends Activity implements OnClickListener {
 			break;
 			
 		case R.id.toggleButton_run_ftp:
-			if(((ToggleButton)v).getText().equals("ON")){
+			if(((ToggleButton)v).getText().equals(getResources().getString(R.string.switch_on))){
 				//si activation serveur
-				if(! this.server.isRunning())
+				if(! this.server.isRunning()){
 					this.server.startServer();
+					((TextView)findViewById(R.id.textView_adress_ip_server)).setText("Adresse ip serveur :"+Utils.getIPAddress(true));				
+				}
 				
 				Toast.makeText(this, "Serveur activé", Toast.LENGTH_SHORT).show();
 			}else{
 				//si desactivation serveur
-				if(this.server.isRunning())
+				if(this.server.isRunning()){
 					this.server.stopServer();
+					((TextView)findViewById(R.id.textView_adress_ip_server)).setText("");				
+				}
 				
 				Toast.makeText(this, "Serveur desactivé", Toast.LENGTH_SHORT).show();
 			}

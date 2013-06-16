@@ -3,7 +3,6 @@ package com.example.serveurftp;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
-
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,9 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
 import com.ftp.core.Session;
 
+/**
+ * Adapteur ListView <=> HashMap de session
+ * 
+ */
 public class SessionsAdapteur extends BaseAdapter {
 	private HashMap<String,Session> sessions;
 	private Context context;
@@ -68,6 +70,11 @@ public class SessionsAdapteur extends BaseAdapter {
 		public TextView ip;
 	}
 	
+	/**
+	 * Recupere l'Item en fonction de la position souhaité
+	 * @param position
+	 * @return objet session demandé
+	 */
 	public Session getItemFromHashMap(int position){
 		Iterator<Entry<String, Session>> iterator = sessions.entrySet().iterator();
 		int i=0;

@@ -46,7 +46,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	 * @param sessions : hashmap contenant les sessions a afficher
 	 */
 	public void refreshListSessions(HashMap<String,Session> sessions){
-		((ListView)findViewById(R.id.listViewSessions)).setAdapter(new SessionsAdapteur(this, sessions));
+		((ListView)findViewById(R.id.listViewSessions)).setAdapter(new SessionsAdapter(this, sessions));
 	}
 	
 	@Override

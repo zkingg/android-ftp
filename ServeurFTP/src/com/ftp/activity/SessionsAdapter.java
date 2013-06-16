@@ -16,11 +16,11 @@ import com.ftp.core.Session;
  * Adapteur ListView <=> HashMap de session
  * 
  */
-public class SessionsAdapteur extends BaseAdapter {
+public class SessionsAdapter extends BaseAdapter {
 	private HashMap<String,Session> sessions;
 	private Context context;
 	
-	public SessionsAdapteur(Context context, HashMap<String,Session> sessions){
+	public SessionsAdapter(Context context, HashMap<String,Session> sessions){
 		this.sessions = sessions;
 		this.context = context;
 	}

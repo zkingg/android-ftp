@@ -3,6 +3,9 @@ package com.example.serveurftp;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
+/**
+ * Activité des preférences, affiche le menu de configuration
+ */
 public class Preferences extends PreferenceActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

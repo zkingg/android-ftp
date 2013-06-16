@@ -1,5 +1,8 @@
 package com.ftp.core;
 
+/**
+ * Classe Descriptif des sessions utilisateur
+ */
 public class Session {
 	private String ip;
 	private String login;

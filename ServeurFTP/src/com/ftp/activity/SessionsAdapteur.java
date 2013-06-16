@@ -1,4 +1,4 @@
-package com.example.serveurftp;
+package com.ftp.activity;
 
 import java.util.HashMap;
 import java.util.Iterator;

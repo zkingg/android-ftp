@@ -21,22 +21,20 @@ public class UserFTPAction extends Thread {
 	private ServerFTP server;
 	/*private DataInputStream din;
 	private DataOutputStream dout;*/
-	private BufferedReader reader;
-	private PrintWriter writer;
+	/*private BufferedReader reader;
+	private PrintWriter writer;*/
 	
 	public UserFTPAction(ServerFTP server, Socket socket){
 		this.client_socket = socket;
 		this.server = server;
-		try {
-			/*this.din = new DataInputStream(socket.getInputStream());
-			this.dout = new DataOutputStream(socket.getOutputStream());*/
-			reader = new BufferedReader(new InputStreamReader(client_socket.getInputStream()));
-			writer = new PrintWriter(new OutputStreamWriter(client_socket.getOutputStream()), true);
-			reply(220, "Bienvenue sur le server FTP");
-			this.start();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
+		/*this.din = new DataInputStream(socket.getInputStream());
+		this.dout = new DataOutputStream(socket.getOutputStream());*/
+		/*reader = new BufferedReader(new InputStreamReader(client_socket.getInputStream()));
+		writer = new PrintWriter(new OutputStreamWriter(client_socket.getOutputStream()), true);*/
+		reply(220, "Bienvenue sur le server FTP");
+		this.start();
+
 	}
 	
 	@Override
@@ -45,7 +43,7 @@ public class UserFTPAction extends Thread {
 		while(!exit && client_socket.isConnected()){
 			
 			try {
-				Thread.sleep(2000);//~debug a virer
+				//Thread.sleep(2000);//~debug a virer
 				String command = reception();
 				String[] args = command.split(" ");
 				Log.i("ftp-client","client "+client_socket.getInetAddress().getHostAddress()+" command :"+command);
@@ -103,15 +101,9 @@ public class UserFTPAction extends Thread {
 	
 	private String reception(){
 		try {
-			String line = "";
-			String tmp_line = "";
-			
-				while ((tmp_line = reader.readLine()) != null) {
-				    line += tmp_line;
-				}
-			
-			System.out.println("réponse :"+line);
-			return line;
+			String rep= new BufferedReader(new InputStreamReader(client_socket.getInputStream())).readLine();
+			System.out.println("réponse :"+rep);
+			return rep;
 		}
 		catch (SocketTimeoutException e) {
 			return null;
@@ -123,7 +115,8 @@ public class UserFTPAction extends Thread {
 	}
 	
 	public int reply(int code,String msg){
-		this.writer.println(code+" "+msg);
+		//this.writer.println(code+" "+msg);
+		envoi(code+" "+msg);
 		Log.i("ftp-client","reply code "+code+" to "+client_socket.getInetAddress().getHostAddress());
 		return code;
 	}

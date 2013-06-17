@@ -12,5 +12,7 @@
     <string name="connect">Connect</string>
     <string name="transfer_mode">Transfer mode</string>
     <string name="username">Username</string>
+    <string name="title_activity_file_list">FileList</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

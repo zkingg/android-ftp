@@ -24,15 +24,14 @@
         android:id="@+id/usernameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
         android:ems="10"
-        android:hint="@string/username" />
+        android:hint="@string/username"
+        android:inputType="text" />
 
     <EditText
         android:id="@+id/passwordEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
         android:ems="10"
         android:hint="@string/password"
         android:inputType="textPassword" />
@@ -41,7 +40,6 @@
         android:id="@+id/portEditText"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
         android:ems="10"
         android:hint="@string/port"
         android:inputType="number" />
@@ -50,7 +48,6 @@
         android:id="@+id/anonymousSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
         android:text="@string/anonymous"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -58,7 +55,6 @@
         android:id="@+id/transferModeRadioGrp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
         android:orientation="horizontal" >
 
         <TextView
@@ -86,7 +82,6 @@
         android:id="@+id/connectBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
         android:text="@string/connect" />
 
 </LinearLayout>

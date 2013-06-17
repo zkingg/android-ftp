@@ -23,6 +23,7 @@ public class ServerFTP {
 	private ServerSocket socket_server;
 	private HashMap<String,Session> sessions;
 	private AsyncTask<Void,Void,Void> thread_server;
+	private boolean ALLOWED_ANONYMOUS_CONNECTION = false;
 	
 	public ServerFTP(MainActivity activity,SharedPreferences prefs){
 		this.activity = activity;
@@ -30,11 +31,14 @@ public class ServerFTP {
 		this.run = false;
 		this.sessions = new HashMap<String,Session>();
 		
-		addUserSession(new Session("Zkingg","10.0.0.1"));
-		addUserSession(new Session("Zkingg2","10.0.0.3"));	
+		/*addUserSession(new Session("Zkingg","10.0.0.1"));
+		addUserSession(new Session("Zkingg2","10.0.0.3"));	*/
 		actualizePrefs();
 	}
 	
+	public void enableAnonymousConnection(){this.ALLOWED_ANONYMOUS_CONNECTION = true;}
+	public void disableAnonymousConnection(){this.ALLOWED_ANONYMOUS_CONNECTION = false;}
+	public boolean anonymousConnectionAllowed(){ return this.ALLOWED_ANONYMOUS_CONNECTION;}
 	public boolean isRunning(){return this.run;}
 	public int getPort(){ return this.port;}
 	public void setPort(int port){this.port = port;}
@@ -101,7 +105,13 @@ public class ServerFTP {
 	 */
 	public void addUserSession(Session session){
 		this.sessions.put(session.getIp(),session);
-		this.activity.refreshListSessions(this.sessions);
+		
+		this.activity.runOnUiThread(new Runnable(){
+			@Override
+			public void run(){
+				ServerFTP.this.activity.refreshListSessions(ServerFTP.this.sessions);
+			}
+		});
 	}
 	
 	/**
@@ -110,7 +120,12 @@ public class ServerFTP {
 	 */
 	public void removeUserSession(Session session){
 		this.sessions.remove(session.getIp());
-		this.activity.refreshListSessions(this.sessions);
+		this.activity.runOnUiThread(new Runnable(){
+			@Override
+			public void run(){
+				ServerFTP.this.activity.refreshListSessions(ServerFTP.this.sessions);
+			}
+		});
 	}
 	
 }

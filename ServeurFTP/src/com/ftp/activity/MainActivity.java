@@ -27,6 +27,7 @@ import com.ftp.core.Utils;
 public class MainActivity extends Activity implements OnClickListener {
 	private ServerFTP server;
 	private SharedPreferences prefs;
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +80,11 @@ public class MainActivity extends Activity implements OnClickListener {
 		case R.id.toggleButton_anonyme:	
 			if(((ToggleButton)v).getText().equals(getResources().getString(R.string.switch_on))){
 				//si activation serveur
+				server.enableAnonymousConnection();
 				Toast.makeText(this, "Connexion annonyme authorisé", Toast.LENGTH_SHORT).show();
 			}else{
 				//si desactivation serveur
+				server.disableAnonymousConnection();
 				Toast.makeText(this, "Connexion annonyme interdite", Toast.LENGTH_SHORT).show();
 			}
 			break;

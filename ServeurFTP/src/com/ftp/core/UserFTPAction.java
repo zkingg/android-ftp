@@ -53,17 +53,34 @@ public class UserFTPAction extends Thread {
 				if(args[0].equals("LIST")){//ACTION : LIST
 					
 				}else if(args[0].equals("USER")){//ACTION : USER
-					if(args.length == 2){
-						this.server.addUserSession(new Session(args[1],client_socket.getInetAddress().getHostAddress()));
+					Session session =  new Session(args[1],client_socket.getInetAddress().getHostAddress());		
+					
+					if(! this.server.anonymousConnectionAllowed()){//si need mdp
+						reply(331, "Password needed");
+						args = reception().split(" ");
+						Log.e("",args[0]);
+						if(args[0].equals("PASS")){	
+							if(session.connection(args[1])){//si conexnion ok
+								reply(230, "User connected");
+								this.server.addUserSession(session);
+							}else{
+								reply(530, "Mot de passe incorrect");
+								continue;
+							}
+						}else{
+							//si echec
+							reply(530, "Erreur de Protocole");
+							continue;
+						}
 					}else{
-						this.server.addUserSession(new Session("Anonyme",client_socket.getInetAddress().getHostAddress()));
+						reply(331, "Anonymous connection allowed");
+						this.server.addUserSession(session);
 					}
 					
-				}else if(args[0].equals("EXIT")){//ACTION : EXIT
+				}else if(args[0].equals("QUIT")){//ACTION : EXIT
 					exit = true;
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -88,9 +105,10 @@ public class UserFTPAction extends Thread {
 		try {
 			String line = "";
 			String tmp_line = "";
-			while ((tmp_line = reader.readLine()) != null) {
-			    line += tmp_line;
-			}
+			
+				while ((tmp_line = reader.readLine()) != null) {
+				    line += tmp_line;
+				}
 			
 			System.out.println("réponse :"+line);
 			return line;
@@ -106,6 +124,7 @@ public class UserFTPAction extends Thread {
 	
 	public int reply(int code,String msg){
 		this.writer.println(code+" "+msg);
+		Log.i("ftp-client","reply code "+code+" to "+client_socket.getInetAddress().getHostAddress());
 		return code;
 	}
 }

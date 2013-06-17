@@ -19,4 +19,12 @@ public class Session {
 	public String getLogin() {return login;}
 	public void setLogin(String login) {this.login = login;}
 	
+	public boolean connection(String mdp){
+		if(mdp.equals("mdp")){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
 }

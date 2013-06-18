@@ -1,15 +1,14 @@
 package com.ftp.core;
 
-import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import org.apache.http.message.BufferedHeader;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
 
 import android.util.Log;
 
@@ -50,30 +49,26 @@ public class DTPServer {
 		} catch (IOException e) {}
 	}
 	
-	public String sendList(String path){
-		String list_dir = "";
+	public void sendList(String path){
 		try {
+			String cmd ="";
 			Socket client = data_server.accept();
 			File rep = new File(server.getAppDirectory()+RACINE_FTP+path);
 			Log.i("dtp-server","acessing to "+rep.getAbsolutePath());
 			if(rep.isDirectory()){
 				PrintStream p = new PrintStream(client.getOutputStream(),true);
 				for(File file : rep.listFiles()){
-					if(file.isDirectory())
-						p.println("d"+file.getName());	
-					else
-						p.println("-"+file.getName());
-					
-					Log.i("dtp-server","file"+file.getName());
+					cmd += 	Utils.getUnixFileDescription(file)+"\r\n";
+					Log.i("dtp-server","file :"+Utils.getUnixFileDescription(file));
 				}
-				p.flush();
+				
+				p.println(cmd);
+				client.close();
+				Log.i("dtp-server","cmd :"+cmd);
 			}
-			//?????
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		return list_dir;
 	}
 	
 	private void init(){

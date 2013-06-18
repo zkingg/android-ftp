@@ -2,10 +2,13 @@ package com.ftp.core;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.http.conn.util.InetAddressUtils;
@@ -153,5 +156,23 @@ public class Utils {
 		} // for now eat exceptions
 		return "";
 	}
-
+	
+	/**
+	 * Retourne la chaine descriptif du fichier 
+	 * @param file analyser
+	 * @return chaine de caractère au format -rw-rw-rw- 1 user group 0 Feb 9 09:38 file.txt
+	 */
+	public static String getUnixFileDescription(File file){            
+            String res="";
+            String permission="";
+            int nb_file_inside = file.isDirectory()? (file.list() != null?  file.list().length : 1) : 1;
+            
+            //permission=(file.canRead()? "r":"-")+(file.canWrite()? "w":"-")+(file.canExecute()? "x":"-");
+            permission= "rwx";
+            
+            res += (file.isDirectory()? "d":"-")+permission+permission+permission+"   ";
+            res += nb_file_inside+" anonymous anonymous "+file.length()+" ";
+            res += new SimpleDateFormat("MMM dd yyyy").format(new Date(file.lastModified())) +" "+file.getName();
+            return res;
+	}
 }

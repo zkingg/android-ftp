@@ -25,6 +25,8 @@ public class UserFTPAction extends Thread {
 	public UserFTPAction(ServerFTP server, Socket socket){
 		this.client_socket = socket;
 		this.server = server;
+		this.session = new Session();
+		this.session.setIp(client_socket.getInetAddress().getHostAddress());
 		
 		reply(220, "Bienvenue sur le server FTP");
 		this.start();
@@ -36,12 +38,13 @@ public class UserFTPAction extends Thread {
 		boolean exit = false;
 		while(!exit && client_socket.isConnected()){
 			try {
+				Thread.sleep(1000);
 				String command = reception();
 				String[] args = command.split(" ");
-				Log.i("ftp-client","client "+client_socket.getInetAddress().getHostAddress()+" command :"+command);
+				Log.i("ftp-client","client "+session.getIp()+" command :"+command);
 				
 				if(args[0].equals("USER")){//ACTION : USER : connection
-					session = new Session(args[1],client_socket.getInetAddress().getHostAddress());		
+					session.setLogin(args[1]);
 					
 					if(! this.server.anonymousConnectionAllowed()){//si need mdp
 						reply(331, "Password needed");
@@ -77,11 +80,24 @@ public class UserFTPAction extends Thread {
 					reply(200,"Type set to "+args[1].charAt(0));
 					
 				}else if(args[0].equals("PASV")){//ACTION : PASV : déclenche mode passif
-					String ip = client_socket.getInetAddress().getHostAddress();
-					String[] inet_num = ip.split("\\.");
-					int port = client_socket.getPort();
+					String[] inet_num = this.server.getSocketDataServer().getInetAddress().getHostAddress().split("\\.");
+					int port = this.server.getSocketDataServer().getLocalPort();
 					reply(227,"Entering Passive Mode ("+inet_num[0]+","+inet_num[1]+","+inet_num[2]+","+inet_num[3]+","+((int)port/256)+","+port%256+").");
 				
+				}else if(args[0].equals("PORT")){//ACTION : PORT : Choix du port de téléchargement
+					String[] inet_address = args[1].split("\\,");
+					String ip = inet_address[0]+"."+inet_address[1]+"."+inet_address[2]+"."+inet_address[3];
+					
+					int port;
+					try {
+						port = Integer.parseInt(inet_address[4]) + Integer.parseInt(inet_address[5]);
+					} catch (Exception e) {
+						port = 0;
+					}
+					
+					session.createClientDataSocket(ip, port);
+					reply(200, "PORT command successful.");
+					
 				/** File explorer commands **/	
 				}else if(args[0].equals("PWD")){//ACTION : PWD : Retourne chemin courant
 					//pas fini ...
@@ -115,7 +131,8 @@ public class UserFTPAction extends Thread {
 		//fermeture socket
 		try {client_socket.close();}
 		catch (IOException e) {}
-		Log.i("ftp-client","client "+client_socket.getInetAddress().getHostAddress()+" has disconected");
+		this.server.removeUserSession(session.getIp());
+		Log.i("ftp-client","client "+session.getIp()+" has disconected");
 	}
 	
 	private void envoi(String str){
@@ -146,7 +163,7 @@ public class UserFTPAction extends Thread {
 	public int reply(int code,String msg){
 		//this.writer.println(code+" "+msg);
 		envoi(code+" "+msg);
-		Log.i("ftp-client","reply code "+code+" to "+client_socket.getInetAddress().getHostAddress());
+		Log.i("ftp-client","reply code "+code+" to "+session.getIp());
 		return code;
 	}
 }

@@ -2,6 +2,7 @@ package com.ftp.core;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.util.HashMap;
 import android.content.SharedPreferences;
@@ -15,14 +16,18 @@ import com.ftp.activity.MainActivity;
  */
 public class ServerFTP {
 	public final static int DEFAULT_PORT = 30000;
-	
+	public final static int DEFAULT_DATA_PORT = 30001;
+
 	private MainActivity activity;
 	private boolean run;
 	private int port;
+	private int data_port;
 	private SharedPreferences prefs;
 	private ServerSocket socket_server;
+	private ServerSocket socket_data_server;
 	private HashMap<String,Session> sessions;
 	private AsyncTask<Void,Void,Void> thread_server;
+	private Thread thread_data_server;
 	private boolean ALLOWED_ANONYMOUS_CONNECTION = false;
 	
 	public ServerFTP(MainActivity activity,SharedPreferences prefs){
@@ -31,8 +36,6 @@ public class ServerFTP {
 		this.run = false;
 		this.sessions = new HashMap<String,Session>();
 		
-		/*addUserSession(new Session("Zkingg","10.0.0.1"));
-		addUserSession(new Session("Zkingg2","10.0.0.3"));	*/
 		actualizePrefs();
 	}
 	
@@ -43,16 +46,41 @@ public class ServerFTP {
 	public int getPort(){ return this.port;}
 	public void setPort(int port){this.port = port;}
 	public HashMap<String,Session> getSessions(){return this.sessions;}
+	public ServerSocket getSocketServer(){return this.socket_server;}
+	public ServerSocket getSocketDataServer(){return this.socket_data_server;}
 	
 	/**
 	 * Lancer le serveur
 	 */
 	public void startServer(){
-		thread_server = new AsyncTask<Void,Void,Void>(){
+		thread_server = new AsyncTask<Void,Void,Void>(){//command server
 			@Override
 			protected Void doInBackground(Void... params) {
 				try {
+					thread_data_server = new Thread(){//lancement server data
+						@Override
+						public void run(){
+							try {
+								socket_data_server= new ServerSocket(data_port);//init srv écoute
+								Log.i("data-server-ftp","data server started to listening to client");
+								while(! socket_data_server.isClosed())
+								{
+								    //UserFTPAction action =new UserFTPAction(ServerFTP.this, );//prise en charge des connexion
+									Socket client = socket_data_server.accept();
+									Log.i("data-server-ftp","Client "+client.getInetAddress().getHostAddress()+" connected on data server");
+								}
+							}
+							catch(SocketException e){} 
+							catch(IOException e) {e.printStackTrace();}
+							
+							Log.i("data-server-ftp","data server stoped listening to client");
+						}
+					};
+					thread_data_server.start();
+					Log.i("data-server-ftp","running on port :"+data_port);					
+					
 					socket_server=new ServerSocket(port);//init srv écoute
+					Log.i("ftp-server","server started to listening to client");
 					while(! socket_server.isClosed())
 					{
 					    UserFTPAction action =new UserFTPAction(ServerFTP.this, socket_server.accept());//prise en charge des connexion
@@ -67,6 +95,7 @@ public class ServerFTP {
 		};
 		thread_server.execute();		
 		Log.i("server-ftp","running on port :"+port);
+	
 		this.run = true;
 	}
 	
@@ -78,6 +107,9 @@ public class ServerFTP {
 			try {
 				if(! this.socket_server.isClosed())
 					this.socket_server.close();
+				
+				if(! this.socket_data_server.isClosed())
+					this.socket_data_server.close();
 				
 				//thread_server.cancel(true);
 			} catch (IOException e) {}
@@ -93,6 +125,7 @@ public class ServerFTP {
 	public void actualizePrefs() {
 		try {
 			this.port = Integer.parseInt(prefs.getString("port",""+DEFAULT_PORT));
+			this.data_port = Integer.parseInt(prefs.getString("data_port",""+DEFAULT_DATA_PORT));
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 			this.port = DEFAULT_PORT;
@@ -118,8 +151,8 @@ public class ServerFTP {
 	 * Retire une session des sessions active
 	 * @param session
 	 */
-	public void removeUserSession(Session session){
-		this.sessions.remove(session.getIp());
+	public void removeUserSession(String ip){
+		this.sessions.remove(ip);
 		this.activity.runOnUiThread(new Runnable(){
 			@Override
 			public void run(){

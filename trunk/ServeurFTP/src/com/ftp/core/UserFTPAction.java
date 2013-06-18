@@ -107,12 +107,12 @@ public class UserFTPAction extends Thread {
 					reply(257,session.getCurrentDirectory()+" is current directory.");
 					
 				}else if(args[0].equals("LIST")){//ACTION : LIST : renvoye la liste des fichiers et répertoires présents dans le répertoire courant
-					reply(150,"Transfert in progress");
+					reply(150,"Opening ASCII mode data connection for file list");
 					//recup list dossier
 					DTPServer data_server = new DTPServer(server, Utils.getIPAddress(true), this.server.getDataPort());
 					data_server.sendList(session.getCurrentDirectory());
 					data_server.stopServer();
-					reply(226,"Transfert complete");
+					reply(226,"Transfer complete");
 					
 				}else if(args[0].equals("ABOR")){//ACTION : ABOR : Interuption d'un telechargement 
 				}else if(args[0].equals("DELE")){//ACTION : DELE : supprime un fichier

@@ -18,6 +18,7 @@ public class Session {
 	
 	private boolean is_logged = false;
 	private Socket client_data_socket;
+	private String current_directory = "/";
 	
 	public Session(){}
 	
@@ -34,7 +35,8 @@ public class Session {
 	public void setLogin(String login) {this.login = login;}
 	public void setTypeData(char type){this.TYPE_DATA = type;}
 	public char getTypeData(){return this.TYPE_DATA;}
-	
+	public void setCurrentDirectory(String directory){this.current_directory = directory;}
+	public String getCurrentDirectory(){return this.current_directory;}	
 	
 	public Socket getClientDataSocket(){return this.client_data_socket;}
 	public void createClientDataSocket(String ip,int port) throws UnknownHostException, IOException{

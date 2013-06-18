@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
@@ -40,6 +41,7 @@ public class UserFTPAction extends Thread {
 				Thread.sleep(1000);
 				String command = reception();
 				String[] args = command.split(" ");
+				//concatener args > 1
 				Log.i("ftp-client","client "+session.getIp()+" command :"+command);
 				
 				if(args[0].equals("USER")){//ACTION : USER : connection
@@ -80,10 +82,12 @@ public class UserFTPAction extends Thread {
 					
 				}else if(args[0].equals("PASV")){//ACTION : PASV : déclenche mode passif
 					String[] inet_num = Utils.getIPAddress(true).split("\\.");
-					int port = this.server.getSocketDataServer().getLocalPort();
+					int port = this.server.getDataPort();
 					reply(227,"Entering Passive Mode ("+inet_num[0]+","+inet_num[1]+","+inet_num[2]+","+inet_num[3]+","+((int)port/256)+","+port%256+").");
+					//reply(227,"Entering Passive Mode (10,10,162,246,117,49)");
 				
 				}else if(args[0].equals("PORT")){//ACTION : PORT : Choix du port de téléchargement
+					/** Mettre a jour ip serverdata **/
 					String[] inet_address = args[1].split("\\,");
 					String ip = inet_address[0]+"."+inet_address[1]+"."+inet_address[2]+"."+inet_address[3];
 					
@@ -100,11 +104,14 @@ public class UserFTPAction extends Thread {
 				/** File explorer commands **/	
 				}else if(args[0].equals("PWD")){//ACTION : PWD : Retourne chemin courant
 					//pas fini ...
-					reply(257,"'\\' is current directory.");
+					reply(257,session.getCurrentDirectory()+" is current directory.");
 					
 				}else if(args[0].equals("LIST")){//ACTION : LIST : renvoye la liste des fichiers et répertoires présents dans le répertoire courant
 					reply(150,"Transfert in progress");
 					//recup list dossier
+					DTPServer data_server = new DTPServer(server, Utils.getIPAddress(true), this.server.getDataPort());
+					data_server.sendList(session.getCurrentDirectory());
+					data_server.stopServer();
 					reply(226,"Transfert complete");
 					
 				}else if(args[0].equals("ABOR")){//ACTION : ABOR : Interuption d'un telechargement 

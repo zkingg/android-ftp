@@ -1,10 +1,11 @@
 package com.ftp.core;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketException;
 import java.util.HashMap;
+
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -24,10 +25,8 @@ public class ServerFTP {
 	private int data_port;
 	private SharedPreferences prefs;
 	private ServerSocket socket_server;
-	private ServerSocket socket_data_server;
 	private HashMap<String,Session> sessions;
 	private AsyncTask<Void,Void,Void> thread_server;
-	private Thread thread_data_server;
 	private boolean ALLOWED_ANONYMOUS_CONNECTION = false;
 	
 	public ServerFTP(MainActivity activity,SharedPreferences prefs){
@@ -47,7 +46,7 @@ public class ServerFTP {
 	public void setPort(int port){this.port = port;}
 	public HashMap<String,Session> getSessions(){return this.sessions;}
 	public ServerSocket getSocketServer(){return this.socket_server;}
-	public ServerSocket getSocketDataServer(){return this.socket_data_server;}
+	public int getDataPort(){return this.data_port; }
 	
 	/**
 	 * Lancer le serveur
@@ -56,29 +55,8 @@ public class ServerFTP {
 		thread_server = new AsyncTask<Void,Void,Void>(){//command server
 			@Override
 			protected Void doInBackground(Void... params) {
-				try {
-					thread_data_server = new Thread(){//lancement server data
-						@Override
-						public void run(){
-							try {
-								socket_data_server= new ServerSocket(data_port);//init srv écoute
-								Log.i("data-server-ftp","data server started to listening to client");
-								while(! socket_data_server.isClosed())
-								{
-								    //UserFTPAction action =new UserFTPAction(ServerFTP.this, );//prise en charge des connexion
-									Socket client = socket_data_server.accept();
-									Log.i("data-server-ftp","Client "+client.getInetAddress().getHostAddress()+" connected on data server");
-								}
-							}
-							catch(SocketException e){} 
-							catch(IOException e) {e.printStackTrace();}
-							
-							Log.i("data-server-ftp","data server stoped listening to client");
-						}
-					};
-					thread_data_server.start();
-					Log.i("data-server-ftp","running on port :"+data_port);					
-					
+				try {			
+
 					socket_server=new ServerSocket(port);//init srv écoute
 					Log.i("ftp-server","server started to listening to client");
 					while(! socket_server.isClosed())
@@ -108,8 +86,8 @@ public class ServerFTP {
 				if(! this.socket_server.isClosed())
 					this.socket_server.close();
 				
-				if(! this.socket_data_server.isClosed())
-					this.socket_data_server.close();
+				/*if(! this.socket_data_server.isClosed())
+					this.socket_data_server.close();*/
 				
 				//thread_server.cancel(true);
 			} catch (IOException e) {}
@@ -161,4 +139,5 @@ public class ServerFTP {
 		});
 	}
 	
+	public File getAppDirectory(){return this.activity.getCacheDir().getAbsoluteFile();}
 }

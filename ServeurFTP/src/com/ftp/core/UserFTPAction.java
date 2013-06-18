@@ -30,7 +30,6 @@ public class UserFTPAction extends Thread {
 		
 		reply(220, "Bienvenue sur le server FTP");
 		this.start();
-
 	}
 	
 	@Override
@@ -80,7 +79,7 @@ public class UserFTPAction extends Thread {
 					reply(200,"Type set to "+args[1].charAt(0));
 					
 				}else if(args[0].equals("PASV")){//ACTION : PASV : déclenche mode passif
-					String[] inet_num = this.server.getSocketDataServer().getInetAddress().getHostAddress().split("\\.");
+					String[] inet_num = Utils.getIPAddress(true).split("\\.");
 					int port = this.server.getSocketDataServer().getLocalPort();
 					reply(227,"Entering Passive Mode ("+inet_num[0]+","+inet_num[1]+","+inet_num[2]+","+inet_num[3]+","+((int)port/256)+","+port%256+").");
 				
@@ -138,7 +137,7 @@ public class UserFTPAction extends Thread {
 	private void envoi(String str){
 		try {
 			PrintStream p = new PrintStream(client_socket.getOutputStream());
-			System.out.println("envoi en cour ...");
+			Log.v("","Envoi en cour ...");
 			p.println(str);		
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -148,7 +147,8 @@ public class UserFTPAction extends Thread {
 	private String reception(){
 		try {
 			String rep= new BufferedReader(new InputStreamReader(client_socket.getInputStream())).readLine();
-			System.out.println("réponse :"+rep);
+			//System.out.println("réponse :"+rep);
+			Log.v("","réponse :"+rep);
 			return rep!=null? rep : "";
 		}
 		catch (SocketTimeoutException e) {

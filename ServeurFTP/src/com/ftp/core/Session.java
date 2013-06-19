@@ -1,8 +1,8 @@
 package com.ftp.core;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.io.File;
+
+import android.util.Log;
 
 /**
  * Classe Descriptif des sessions utilisateur
@@ -38,7 +38,5 @@ public class Session {
 			return false;
 		}
 	}
-	
-	
 	
 }

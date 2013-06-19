@@ -116,9 +116,23 @@ public class UserFTPAction extends Thread {
 					dtp_server.sendList(session.getCurrentDirectory());
 					reply(226,"Transfer complete");
 					
+				}else if(args[0].equals("CWD")){//ACTION : CWD : Selection du repertoire de destination
+					session.setCurrentDirectory(args[1]);
+					reply(250, "CWD command successful.");
+					
 				}else if(args[0].equals("ABOR")){//ACTION : ABOR : Interuption d'un telechargement 
 				}else if(args[0].equals("DELE")){//ACTION : DELE : supprime un fichier
+					if(dtp_server.removeFile(args[1]))
+						reply(250, "DELE command successful.");
+					else
+						reply(550,"could not remove file");
+				
 				}else if(args[0].equals("RMD")){//ACTION : RMD : supprime un repertoire
+					if(dtp_server.removeDirectory(args[1]))
+						reply(250, "RMD command successful.");
+					else
+						reply(550,"could not remove directory");
+				
 				}else if(args[0].equals("MKD")){//ACTION : MKD : créer un répertoire
 				}else if(args[0].equals("RETR")){//ACTION : RETR : Recuperation du fichier passer en paramétre
 				}else if(args[0].equals("STOR")){//ACTION : STOR : Stockage du fichier donné, écrase si déjà exitant

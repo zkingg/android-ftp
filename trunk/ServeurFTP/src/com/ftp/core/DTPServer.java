@@ -93,20 +93,45 @@ public class DTPServer {
 			Log.i("dtp-server","acessing to "+rep.getAbsolutePath());
 			if(rep.isDirectory()){
 				PrintStream p = new PrintStream(client.getOutputStream(),true);
-				for(File file : rep.listFiles()){
-					cmd += 	Utils.getUnixFileDescription(file)+"\r\n";
-					Log.i("dtp-server","file :"+Utils.getUnixFileDescription(file));
+				if(rep.listFiles() != null){
+					for(File file : rep.listFiles()){
+						cmd += 	Utils.getUnixFileDescription(file)+"\r\n";
+						Log.i("dtp-server","file :"+Utils.getUnixFileDescription(file));
+					}
 				}
 				
 				p.println(cmd);
 				client.close();
-				Log.i("dtp-server","cmd :"+cmd);
+				Log.v("dtp-server","cmd :"+cmd);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}finally{
 			stopServer();
 		}
+	}
+	
+	public boolean removeDirectory(String dir) {
+		File file = new File(server.getAppDirectory()+RACINE_FTP+dir);
+		return removeDirectoryAndFile(file);
+	}
+	
+	public boolean removeDirectoryAndFile(File dir){
+		Log.i("","remove :"+dir.getAbsolutePath());
+		if(dir.isDirectory() && dir.listFiles() != null){
+			for(File file : dir.listFiles()){
+				if(file.isDirectory())
+					removeDirectoryAndFile(file);
+				else
+					file.delete();
+			}
+		}
+		return dir.delete();
+	}
+
+	public boolean removeFile(String file_delete) {
+		File file = new File(server.getAppDirectory()+RACINE_FTP+file_delete);
+		return removeDirectoryAndFile(file);
 	}
 	
 	private void init(){

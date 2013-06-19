@@ -34,23 +34,41 @@ public class UserFTPAction extends Thread {
 		this.start();
 	}
 	
+	/**
+	 * Recupere la commande du client ftp et met en forme les données
+	 * @return
+	 */
+	private String[] getClientCommand(){
+		String[] result_command = new String[2];
+		String command = reception();
+		String[] args = command.split(" ");
+		
+		Log.i("ftp-client","client "+session.getIp()+" command :"+command);
+		if(args.length == 2){
+			result_command[1] = args[1];
+		}else if(args.length > 2){
+			for(int i=2;i<args.length;i++){
+				args[1] += " "+args[i];	
+			}
+			result_command[1] = args[1];
+		}
+		
+		result_command[0] = args[0];
+		return result_command;
+	}
+	
 	@Override
 	public void run(){
 		boolean exit = false;
 		while(!exit && client_socket.isConnected()){
 			try {
-				Thread.sleep(1000);
-				String command = reception();
-				String[] args = command.split(" ");
-				//concatener args > 1
-				Log.i("ftp-client","client "+session.getIp()+" command :"+command);
-				
+				String[] args = getClientCommand();
 				if(args[0].equals("USER")){//ACTION : USER : connection
 					session.setLogin(args[1]);
 					
 					if(! this.server.anonymousConnectionAllowed()){//si need mdp
 						reply(331, "Password needed");
-						args = reception().split(" ");
+						args = getClientCommand();
 						if(args[0].equals("PASS")){	
 							if(session.connection(args[1])){//si conexnion ok
 								reply(230, "User connected");
@@ -87,7 +105,7 @@ public class UserFTPAction extends Thread {
 					dtp_server.setTransfertMode(DTPServer.PASIVE_MODE);
 					reply(227,"Entering Passive Mode ("+inet_num[0]+","+inet_num[1]+","+inet_num[2]+","+inet_num[3]+","+((int)port/256)+","+port%256+").");
 				
-				}else if(args[0].equals("PORT")){//ACTION : PORT : Choix du port de téléchargement
+				}else if(args[0].equals("PORT")){//ACTION : PORT : Activation mode actif
 					/** Mettre a jour ip serverdata **/
 					String[] inet_address = args[1].split("\\,");
 					String ip = inet_address[0]+"."+inet_address[1]+"."+inet_address[2]+"."+inet_address[3];
@@ -106,18 +124,16 @@ public class UserFTPAction extends Thread {
 					
 				/** File explorer commands **/	
 				}else if(args[0].equals("PWD")){//ACTION : PWD : Retourne chemin courant
-					//pas fini ...
-					reply(257,session.getCurrentDirectory()+" is current directory.");
+					reply(257,dtp_server.getCurrentDirectory()+" is current directory.");
 					
 				}else if(args[0].equals("LIST")){//ACTION : LIST : renvoye la liste des fichiers et répertoires présents dans le répertoire courant
 					reply(150,"Opening ASCII mode data connection for file list");
 					//recup list dossier
-					//DTPServer data_server = new DTPServer(server, Utils.getIPAddress(true), this.server.getDataPort());
-					dtp_server.sendList(session.getCurrentDirectory());
+					dtp_server.sendList();
 					reply(226,"Transfer complete");
 					
 				}else if(args[0].equals("CWD")){//ACTION : CWD : Selection du repertoire de destination
-					session.setCurrentDirectory(args[1]);
+					dtp_server.setCurrentDirectory(args[1]);
 					reply(250, "CWD command successful.");
 					
 				}else if(args[0].equals("ABOR")){//ACTION : ABOR : Interuption d'un telechargement 
@@ -134,8 +150,30 @@ public class UserFTPAction extends Thread {
 						reply(550,"could not remove directory");
 				
 				}else if(args[0].equals("MKD")){//ACTION : MKD : créer un répertoire
+					if(dtp_server.createDirectory(args[1]))
+						reply(257,"Directory created");
+					else
+						reply(550,"Create new directory faillure");					
+					
 				}else if(args[0].equals("RETR")){//ACTION : RETR : Recuperation du fichier passer en paramétre
 				}else if(args[0].equals("STOR")){//ACTION : STOR : Stockage du fichier donné, écrase si déjà exitant
+				}else if(args[0].equals("RNFR")){//ACTION : RNFR : Renomage de fichier
+					String source = args[1];
+					if(dtp_server.fileExist(source)){
+						reply(350,"File ready to rename");
+						args = getClientCommand();
+						if(args[0].equals("RNTO")){
+							if(dtp_server.renameFile(source, args[1]))
+								reply(250,"Sucess rename");
+							else
+								reply(553,"Faillure rename");
+						}else{
+							reply(553,"Not expected command");
+						}						
+					}	
+					else
+						reply(550,"File not found");
+
 				}else if(args[0].equals("STOU")){//ACTION : STOU : Stockage du fichier donné, nom unique généré, nom retourné dans reponse
 				}else if(args[0].equals("")){//si aucune action -- connexion interompue ??
 					Thread.sleep(3000);

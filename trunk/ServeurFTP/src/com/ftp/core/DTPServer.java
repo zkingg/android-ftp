@@ -22,12 +22,15 @@ public class DTPServer {
 	private ServerSocket data_server;
 	private ServerFTP server;
 	private int transfert_mode = DTPServer.PASIVE_MODE;
+	private String current_directory = "/";
 	private char type_data = 'I';//par défaut mode tranfert : Binaire
 	//A - ASCII text 
 	//E - EBCDIC text 
 	//I - image (binary data) 
 	//L - local format
 	
+	public void setCurrentDirectory(String directory){this.current_directory = directory;}
+	public String getCurrentDirectory(){return this.current_directory;}	
 	public void setTransfertMode(int mode){this.transfert_mode = mode;}
 	public int getTransfertMode(){return this.transfert_mode;}
 	public void setTypeData(char type){this.type_data = type;}
@@ -55,13 +58,16 @@ public class DTPServer {
 	 */
 	public Socket getClientSocket() throws IOException{
 		if(this.transfert_mode == DTPServer.PASIVE_MODE){
-			if(data_server != null && data_server.isBound()){
-				try {data_server.close();}
-				catch (IOException e) {}
+			try {
+				if(data_server != null && data_server.isBound()){
+					data_server.close();
+				}
+				
+				data_server = new ServerSocket(server.getDataPort());
 			}
-			
-			data_server = new ServerSocket(server.getDataPort());
+			catch (IOException e) {}
 			return data_server.accept();
+			
 		}else if(this.transfert_mode == DTPServer.ACTIVE_MODE){
 			if(ip != null && port > 0 ){
 				return new Socket(ip,port);
@@ -84,12 +90,12 @@ public class DTPServer {
 	 * Commande List : envoi la liste des repertoire au client ftp
 	 * @param path
 	 */
-	public void sendList(String path){
+	public void sendList(){
 		try {
 			String cmd ="";
 			//Socket client = data_server.accept();
 			Socket client = this.getClientSocket();
-			File rep = new File(server.getAppDirectory()+RACINE_FTP+path);
+			File rep = new File(server.getAppDirectory()+RACINE_FTP+current_directory);
 			Log.i("dtp-server","acessing to "+rep.getAbsolutePath());
 			if(rep.isDirectory()){
 				PrintStream p = new PrintStream(client.getOutputStream(),true);
@@ -131,6 +137,7 @@ public class DTPServer {
 
 	public boolean removeFile(String file_delete) {
 		File file = new File(server.getAppDirectory()+RACINE_FTP+file_delete);
+		Log.i("","remove :"+file.getAbsolutePath());
 		return removeDirectoryAndFile(file);
 	}
 	
@@ -139,5 +146,23 @@ public class DTPServer {
 		if(! f.exists()){
 			f.mkdir();
 		}
+	}
+	
+	public boolean fileExist(String file){
+		File f = new File(server.getAppDirectory()+RACINE_FTP+current_directory+"/"+file);
+		return f.isDirectory() || f.isFile();
+	}
+	
+	public boolean renameFile(String source,String destination){
+		File file_src = new File(server.getAppDirectory()+RACINE_FTP+current_directory+"/"+source);
+		File file_dst = new File(server.getAppDirectory()+RACINE_FTP+current_directory+"/"+destination);
+		Log.i("","rename :"+file_src+" => "+file_dst);
+		return file_src.renameTo(file_dst);
+	}
+	
+	public boolean createDirectory(String dir) {
+		File file = new File(server.getAppDirectory()+RACINE_FTP+current_directory+"/"+dir);
+		Log.i("","mkdir :"+file.getAbsolutePath());
+		return file.mkdir();
 	}
 }

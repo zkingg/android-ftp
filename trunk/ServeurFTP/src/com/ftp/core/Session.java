@@ -12,7 +12,6 @@ public class Session {
 	private String login;
 	
 	private boolean is_logged = false;
-	private String current_directory = "/";
 	
 	public Session(){}
 	
@@ -27,9 +26,6 @@ public class Session {
 	public void setIp(String ip) {this.ip = ip;	}
 	public String getLogin() {return login;}
 	public void setLogin(String login) {this.login = login;}
-
-	public void setCurrentDirectory(String directory){this.current_directory = directory;}
-	public String getCurrentDirectory(){return this.current_directory;}	
 	
 	public boolean connection(String mdp){
 		if(mdp.equals("mdp")){

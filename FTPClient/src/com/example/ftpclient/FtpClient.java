@@ -5,23 +5,22 @@ import org.apache.commons.net.ftp.FTPClientConfig;
 
 public class FtpClient {
 	
-	private static FTPClient ftp = null;
-	private static FTPClientConfig config = null;
+	private FtpClient() {}
 	
-	private FtpClient() {
-		
+	private static class FtpClientHolder {
+		private final static FTPClient instance = new FTPClient();
 	}
 	
-	public static FTPClient getInstance() {
-		if (ftp == null)
-			ftp = new FTPClient();
-		return ftp;
+	private static class FtpClientConfigHolder {
+		private final static FTPClientConfig instance = new FTPClientConfig();
 	}
 	
-	public static FTPClientConfig getConfig() {
-		if (config == null)
-			config = new FTPClientConfig();
-		return config;
+	public static FTPClient getFtpClient() {
+		return FtpClientHolder.instance;
+	}
+	
+	public static FTPClientConfig getFtpClientConfig() {
+		return FtpClientConfigHolder.instance;
 	}
 	
 }

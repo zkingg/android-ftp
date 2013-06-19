@@ -94,7 +94,7 @@ public class UserFTPAction extends Thread {
 					
 					int port;
 					try {
-						port = Integer.parseInt(inet_address[4]) + Integer.parseInt(inet_address[5]);
+						port = Integer.parseInt(inet_address[4])*256 + Integer.parseInt(inet_address[5]);
 					} catch (Exception e) {
 						port = 0;
 					}

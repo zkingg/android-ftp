@@ -40,20 +40,19 @@ public class DTPServer {
 	
 	public DTPServer(ServerFTP server) {
 		this.server = server;
-		//data_server = new ServerSocket(port);
 		
 		init();
 	}
 	
-	/*public void statServer(int port) throws IOException{
-		try {
-			if(! data_server.isClosed())
-				data_server.close();
-		} catch (IOException e) {}
-		
-		data_server = new ServerSocket(port);
-	}*/
-	
+	/**
+	 * Si mode passive :
+	 * 	démarre serveur dft et attend connexion client
+	 * Si mode active :
+	 * 	Se connecte sur le port de client ftp
+	 * 
+	 * @return socket du client
+	 * @throws IOException
+	 */
 	public Socket getClientSocket() throws IOException{
 		if(this.transfert_mode == DTPServer.PASIVE_MODE){
 			if(data_server != null && data_server.isBound()){
@@ -64,10 +63,12 @@ public class DTPServer {
 			data_server = new ServerSocket(server.getDataPort());
 			return data_server.accept();
 		}else if(this.transfert_mode == DTPServer.ACTIVE_MODE){
-			return null;
-		}else{
-			return null;
+			if(ip != null && port > 0 ){
+				return new Socket(ip,port);
+			}
 		}
+		
+		throw new IOException("Mode de transfert incorrect");
 	}
 	
 	public void stopServer(){
@@ -79,6 +80,10 @@ public class DTPServer {
 		} catch (IOException e) {}
 	}
 	
+	/**
+	 * Commande List : envoi la liste des repertoire au client ftp
+	 * @param path
+	 */
 	public void sendList(String path){
 		try {
 			String cmd ="";

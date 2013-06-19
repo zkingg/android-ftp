@@ -44,12 +44,12 @@
         android:hint="@string/port"
         android:inputType="number" />
 
-    <Switch
-        android:id="@+id/anonymousSwitch"
+    <ToggleButton
+        android:id="@+id/anonymousToggleBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/anonymous"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textOn="@string/anonymousOn"
+        android:textOff="@string/anonymousOff" />
 
     <RadioGroup
         android:id="@+id/transferModeRadioGrp"

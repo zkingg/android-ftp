@@ -3,19 +3,13 @@ package com.example.ftpclient;
 import java.io.IOException;
 
 import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
-import android.database.DataSetObserver;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.support.v4.app.NavUtils;
 
@@ -28,36 +22,7 @@ public class FileList extends Activity {
 		// Show the Up button in the action bar.
 		setupActionBar();
 		
-		AsyncTask<Void, Void, Void> t = new AsyncTask<Void, Void, Void>() {
-			
-			FTPClient ftp = FtpClient.getInstance();
-			ListView listView = (ListView) findViewById(R.id.listView1);
-			ArrayAdapter<String> arrayAdapter = null;
-			String[] filenames;
-			
-			@Override
-			protected Void doInBackground(Void... params) {
-				try {
-					filenames = ftp.listNames();
-					for (int i = 0; i < filenames.length; i++) {
-						Log.d("nimitt", filenames[i]);
-					}
-				} catch (IOException e) {
-					Log.e("nimitt", "Problème de récupération des fichiers");
-					e.printStackTrace();
-				}
-				return null;
-			}
-			
-			@Override
-			protected void onPostExecute(Void result) {
-				arrayAdapter = new ArrayAdapter<String>(FileList.this, R.id.listView1, filenames);
-				listView.setAdapter(arrayAdapter);
-				super.onPostExecute(result);
-			}
-		};
-		
-		t.execute();
+		new ShowFileList().execute();
 	}
 
 	/**
@@ -91,6 +56,30 @@ public class FileList extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	private class ShowFileList extends AsyncTask<Void, Void, String[]> {
+
+		@Override
+		protected String[] doInBackground(Void... params) {
+			FTPClient ftp = FtpClient.getFtpClient();
+			String[] filenames = null;
+			try {
+				filenames = ftp.listNames();
+			} catch (IOException e) {
+				Log.e("ftpclient", "could not get filenames");
+				e.printStackTrace();
+			}
+			return filenames;
+		}
+		
+		@Override
+		protected void onPostExecute(String[] result) {
+			ListView view = (ListView) findViewById(R.id.listView1);
+			ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, result);
+			view.setAdapter(adapter);
+		}
+		
 	}
 
 }

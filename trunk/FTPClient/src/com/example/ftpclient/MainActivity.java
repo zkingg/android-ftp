@@ -1,6 +1,7 @@
 package com.example.ftpclient;
 
 import java.io.IOException;
+import java.net.SocketException;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -23,11 +24,11 @@ import android.widget.RadioGroup;
 public class MainActivity extends Activity implements OnClickListener {
 
 	private String address = "10.0.2.2";
-	private int port = 23456;
+	private int port = 11111;
 	private String username = "anonymous";
 	private String password = "";
-	private boolean anonymous;
-	private int transferMode;
+	private boolean anonymous = true;
+	private int transferMode = FTP.ASCII_FILE_TYPE;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,69 +46,48 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View view) {
-		EditText ftpServerEditText = (EditText) findViewById(R.id.ftpServerEditText);
-		EditText portEditText = (EditText) findViewById(R.id.portEditText);
-		EditText usernameEditText = (EditText) findViewById(R.id.usernameEditText);
-		EditText passwordEditText = (EditText) findViewById(R.id.passwordEditText);
-		ToggleButton anonymousToggleButton = (ToggleButton) findViewById(R.id.anonymousToggleBtn);
-		int checkedRadioBtn = ((RadioGroup) findViewById(R.id.transferModeRadioGrp))
-				.getCheckedRadioButtonId();
+//		EditText ftpServerEditText = (EditText) findViewById(R.id.ftpServerEditText);
+//		EditText portEditText = (EditText) findViewById(R.id.portEditText);
+//		EditText usernameEditText = (EditText) findViewById(R.id.usernameEditText);
+//		EditText passwordEditText = (EditText) findViewById(R.id.passwordEditText);
+//		ToggleButton anonymousToggleButton = (ToggleButton) findViewById(R.id.anonymousToggleBtn);
+//		int checkedRadioBtn = ((RadioGroup) findViewById(R.id.transferModeRadioGrp))
+//				.getCheckedRadioButtonId();
+//
+//		 address = ftpServerEditText.getText().toString();
+//		 port = Integer.parseInt(portEditText.getText().toString());
+//		 username = usernameEditText.getText().toString();
+//		 password = passwordEditText.getText().toString();
+//		 anonymous = anonymousToggleButton.isChecked();
+//		 transferMode = (checkedRadioBtn == R.id.asciiRadioBtn ?
+//		 FTP.ASCII_FILE_TYPE : FTP.BINARY_FILE_TYPE);
+		
+		new ConnectToFTPServer().execute();
+	}
 
-		// address = ftpServerEditText.getText().toString();
-		// port = Integer.parseInt(portEditText.getText().toString());
-		// username = usernameEditText.getText().toString();
-		// password = passwordEditText.getText().toString();
-		// anonymous = anonymousToggleButton.isChecked();
-		// transferMode = (checkedRadioBtn == R.id.asciiRadioBtn ?
-		// FTP.ASCII_FILE_TYPE : FTP.BINARY_FILE_TYPE);
+	private class ConnectToFTPServer extends AsyncTask<Void, Void, Void> { 
 
-		AsyncTask<Void, Void, Void> t = new AsyncTask<Void, Void, Void>() {
-
-			FTPClient ftp = FtpClient.getInstance();
-			FTPClientConfig config = FtpClient.getConfig();
-			int reply;
-			Intent intent = new Intent(getApplicationContext(), FileList.class);
-
-			@Override
-			protected Void doInBackground(Void... params) {
-				try {
-					ftp.configure(config);
-//					ftp.setFileType(transferMode);
-
-					ftp.connect(address, port);
-					reply = ftp.getReplyCode();
-
-					if (!FTPReply.isPositiveCompletion(reply)) {
-						ftp.disconnect();
-						Log.d("nimitt", "FTP server refused connection.");
-					}
-					else {
-						ftp.login(username, password);
-						if (!FTPReply.isPositiveCompletion(ftp.getReplyCode())) {
-							ftp.disconnect();
-							Log.d("nimitt", "Bad username or password");
-						}
-						else {
-							startActivity(intent);
-						}
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					if (ftp.isConnected()) {
-						try {
-							ftp.disconnect();
-						} catch (IOException ioe) {
-							// do nothing
-						}
-					}
-				}
-				return null;
+		@Override
+		protected Void doInBackground(Void... params) {
+			FTPClient ftp = FtpClient.getFtpClient();
+			FTPClientConfig config = FtpClient.getFtpClientConfig();
+			Intent intent = new Intent(getApplicationContext(),	FileList.class);
+			ftp.configure(config);
+			try {
+				if (ftp.isConnected())
+					ftp.disconnect();
+				ftp.connect(address, port);
+				ftp.login(username, password);
+				startActivity(intent);
+			} catch (SocketException e) {
+				Log.e("ftpclient", e.getMessage());
+				e.printStackTrace();
+			} catch (IOException e) {
+				Log.e("ftpclient", e.getMessage());
+				e.printStackTrace();
 			}
-
-		};
-
-		t.execute();
+			return null;
+		}
 	}
 
 }

@@ -21,6 +21,7 @@ import android.util.Log;
 public class UserFTPAction extends Thread {
 	private Socket client_socket;
 	private ServerFTP server;
+	private DTPServer dtp_server;
 	private Session session;
 	
 	public UserFTPAction(ServerFTP server, Socket socket){
@@ -28,7 +29,7 @@ public class UserFTPAction extends Thread {
 		this.server = server;
 		this.session = new Session();
 		this.session.setIp(client_socket.getInetAddress().getHostAddress());
-		
+		this.dtp_server = new DTPServer(server);
 		reply(220, "Bienvenue sur le server FTP");
 		this.start();
 	}
@@ -77,14 +78,14 @@ public class UserFTPAction extends Thread {
 					reply(215, " Android "+Build.DISPLAY);
 					
 				}else if(args[0].equals("TYPE")){//ACTION : TYPE : precise le format des données qui seront envoyé
-					session.setTypeData(args[1].charAt(0));
+					dtp_server.setTypeData(args[1].charAt(0));
 					reply(200,"Type set to "+args[1].charAt(0));
 					
 				}else if(args[0].equals("PASV")){//ACTION : PASV : déclenche mode passif
 					String[] inet_num = Utils.getIPAddress(true).split("\\.");
 					int port = this.server.getDataPort();
+					dtp_server.setTransfertMode(DTPServer.PASIVE_MODE);
 					reply(227,"Entering Passive Mode ("+inet_num[0]+","+inet_num[1]+","+inet_num[2]+","+inet_num[3]+","+((int)port/256)+","+port%256+").");
-					//reply(227,"Entering Passive Mode (10,10,162,246,117,49)");
 				
 				}else if(args[0].equals("PORT")){//ACTION : PORT : Choix du port de téléchargement
 					/** Mettre a jour ip serverdata **/
@@ -98,7 +99,9 @@ public class UserFTPAction extends Thread {
 						port = 0;
 					}
 					
-					session.createClientDataSocket(ip, port);
+					dtp_server.setIp(ip);
+					dtp_server.setPort(port);
+					dtp_server.setTransfertMode(DTPServer.ACTIVE_MODE);
 					reply(200, "PORT command successful.");
 					
 				/** File explorer commands **/	
@@ -109,9 +112,8 @@ public class UserFTPAction extends Thread {
 				}else if(args[0].equals("LIST")){//ACTION : LIST : renvoye la liste des fichiers et répertoires présents dans le répertoire courant
 					reply(150,"Opening ASCII mode data connection for file list");
 					//recup list dossier
-					DTPServer data_server = new DTPServer(server, Utils.getIPAddress(true), this.server.getDataPort());
-					data_server.sendList(session.getCurrentDirectory());
-					data_server.stopServer();
+					//DTPServer data_server = new DTPServer(server, Utils.getIPAddress(true), this.server.getDataPort());
+					dtp_server.sendList(session.getCurrentDirectory());
 					reply(226,"Transfer complete");
 					
 				}else if(args[0].equals("ABOR")){//ACTION : ABOR : Interuption d'un telechargement 

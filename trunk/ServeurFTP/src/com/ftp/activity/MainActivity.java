@@ -110,6 +110,8 @@ public class MainActivity extends Activity implements OnClickListener {
 			break;
 			
 		case R.id.button_gestion_compte:
+			Intent i = new Intent(this, GestionUsersActivity.class);
+			startActivity(i);
 			break;
 			
 		case R.id.button_exploreur_ftp:

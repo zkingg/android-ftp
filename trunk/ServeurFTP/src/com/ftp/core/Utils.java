@@ -4,8 +4,11 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -174,5 +177,29 @@ public class Utils {
             res += nb_file_inside+" anonymous anonymous "+file.length()+" ";
             res += new SimpleDateFormat("MMM dd yyyy").format(new Date(file.lastModified())) +" "+file.getName();
             return res;
+	}
+	
+	/**
+	 * Créer un md5 sur 32 caractéres
+	 * @param s : string a encoder
+	 * @return hashtext : md5 de la chaine passée 
+	 */
+	public static String md5(String s) {
+		MessageDigest m;
+		try {
+			m = MessageDigest.getInstance("MD5");
+			m.reset();
+			m.update(s.getBytes());
+			byte[] digest = m.digest();
+			BigInteger bigInt = new BigInteger(1, digest);
+			String hashtext = bigInt.toString(16);
+			while (hashtext.length() < 32) {
+				hashtext = "0" + hashtext;
+			}
+			return hashtext;
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return null;
+		}	
 	}
 }

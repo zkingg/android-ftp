@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.HashMap;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -47,6 +48,7 @@ public class ServerFTP {
 	public HashMap<String,Session> getSessions(){return this.sessions;}
 	public ServerSocket getSocketServer(){return this.socket_server;}
 	public int getDataPort(){return this.data_port; }
+	public Activity getActivity(){return this.activity;}
 	
 	/**
 	 * Lancer le serveur

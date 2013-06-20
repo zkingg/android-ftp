@@ -28,6 +28,14 @@
             android:name="com.ftp.activity.Preferences"
             android:label="@string/app_name" >
         </activity>
+                <activity
+            android:name="com.ftp.activity.GestionUsersActivity"
+            android:label="@string/app_name" >
+        </activity>
+                <activity
+            android:name="com.ftp.activity.NewUserActivity"
+            android:label="@string/app_name" >
+        </activity>
     </application>
 
 </manifest>

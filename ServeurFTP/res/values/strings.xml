@@ -11,6 +11,13 @@
 	<string name="acceuil.explorateur_fichier">Voir FTP</string>
 	<string name="acceuil.gestion_compte">Gestion des comptes</string>
 	<string name="acceuil.liste_utilisateur_connectee">Liste des utilisateur connectées</string>
+	<string name="gestion_compte.titre">Gestion des comptes</string>
+	<string name="gestion_compte.ajout">Ajouter un nouvel utilisateur</string>
+	<string name="ajout_user.titre">Nouveau utilisateur :</string>
+	<string name="ajout_user.login">Login :</string>
+	<string name="ajout_user.mdp">Mot de passe :</string>
 	<string name="switch.on">ON</string>
 	<string name="switch.off">OFF</string>
+	<string name="valid">Valider</string>
+	<string name="gestion_user_context_menu.delete">Supprimer</string>
 </resources>

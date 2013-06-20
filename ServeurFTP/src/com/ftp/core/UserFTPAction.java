@@ -27,7 +27,7 @@ public class UserFTPAction extends Thread {
 	public UserFTPAction(ServerFTP server, Socket socket){
 		this.client_socket = socket;
 		this.server = server;
-		this.session = new Session();
+		this.session = new Session(server.getActivity());
 		this.session.setIp(client_socket.getInetAddress().getHostAddress());
 		this.dtp_server = new DTPServer(server);
 		reply(220, "Bienvenue sur le server FTP");
@@ -175,7 +175,7 @@ public class UserFTPAction extends Thread {
 						reply(550,"File not found");
 
 				}else if(args[0].equals("STOU")){//ACTION : STOU : Stockage du fichier donné, nom unique généré, nom retourné dans reponse
-				}else if(args[0].equals("")){//si aucune action -- connexion interompue ??
+				}else if(args[0].equals("")){//si aucune action -- connexion interompue
 					Thread.sleep(3000);
 					exit = true;
 					

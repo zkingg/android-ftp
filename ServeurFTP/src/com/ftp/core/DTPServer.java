@@ -122,7 +122,7 @@ public class DTPServer {
 		return removeDirectoryAndFile(file);
 	}
 	
-	public boolean removeDirectoryAndFile(File dir){
+	public static boolean removeDirectoryAndFile(File dir){
 		Log.i("","remove :"+dir.getAbsolutePath());
 		if(dir.isDirectory() && dir.listFiles() != null){
 			for(File file : dir.listFiles()){

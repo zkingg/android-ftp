@@ -91,10 +91,11 @@ public class DTPServer {
 	 * @param path
 	 */
 	public void sendList(){
+		Socket client = null;
 		try {
 			String cmd ="";
 			//Socket client = data_server.accept();
-			Socket client = this.getClientSocket();
+			client = this.getClientSocket();
 			File rep = new File(server.getAppDirectory()+RACINE_FTP+current_directory);
 			Log.i("dtp-server","acessing to "+rep.getAbsolutePath());
 			if(rep.isDirectory()){
@@ -114,6 +115,8 @@ public class DTPServer {
 			e.printStackTrace();
 		}finally{
 			stopServer();
+			try {if(client != null)client.close();}
+			catch (IOException e) {}
 		}
 	}
 	

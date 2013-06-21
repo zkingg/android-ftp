@@ -76,6 +76,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
+		Intent i;
 		switch(v.getId()){
 		case R.id.toggleButton_anonyme:	
 			if(((ToggleButton)v).getText().equals(getResources().getString(R.string.switch_on))){
@@ -110,11 +111,13 @@ public class MainActivity extends Activity implements OnClickListener {
 			break;
 			
 		case R.id.button_gestion_compte:
-			Intent i = new Intent(this, GestionUsersActivity.class);
+			i = new Intent(this, GestionUsersActivity.class);
 			startActivity(i);
 			break;
 			
 		case R.id.button_exploreur_ftp:
+			i = new Intent(this, FtpExplorerActivity.class);
+			startActivity(i);
 			break;
 		}
 	}

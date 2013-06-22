@@ -141,5 +141,5 @@ public class ServerFTP {
 		});
 	}
 	
-	public File getAppDirectory(){return this.activity.getCacheDir().getAbsoluteFile();}
+	public File getAppDirectory(){return this.activity.getFilesDir().getAbsoluteFile();}
 }

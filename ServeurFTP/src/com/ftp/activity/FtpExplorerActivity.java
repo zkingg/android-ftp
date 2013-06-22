@@ -59,7 +59,7 @@ public class FtpExplorerActivity extends Activity implements OnItemClickListener
 	private ArrayList<File> getListFile() {
 		ArrayList<File> list_file = new ArrayList<File>();
 		list_file.add(new File(".."));
-		String path_to_dir = getCacheDir()+"/"+DTPServer.RACINE_FTP+"/"+this.path;
+		String path_to_dir = getFilesDir()+"/"+DTPServer.RACINE_FTP+"/"+this.path;
 		path_to_dir = path_to_dir.replaceAll("\\s", "\\ ");
 		File root_repertory = new File(path_to_dir);
 		Log.i("ftp-explorer", "scanning dir :"+root_repertory.getAbsolutePath());

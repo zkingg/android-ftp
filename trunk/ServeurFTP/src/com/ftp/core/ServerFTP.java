@@ -69,6 +69,8 @@ public class ServerFTP {
 				catch(SocketException e){} 
 				catch (IOException e) {e.printStackTrace();}
 				
+				ServerFTP.this.sessions.clear();
+				refreshListSessions();
 				Log.i("ftp-server","server stoped listening to client");
 				return null;
 			}
@@ -118,7 +120,13 @@ public class ServerFTP {
 	 */
 	public void addUserSession(Session session){
 		this.sessions.put(session.getIp(),session);
-		
+		refreshListSessions();
+	}
+	
+	/**
+	 * Actualise le table des seesions
+	 */
+	public void refreshListSessions(){
 		this.activity.runOnUiThread(new Runnable(){
 			@Override
 			public void run(){
@@ -133,12 +141,7 @@ public class ServerFTP {
 	 */
 	public void removeUserSession(String ip){
 		this.sessions.remove(ip);
-		this.activity.runOnUiThread(new Runnable(){
-			@Override
-			public void run(){
-				ServerFTP.this.activity.refreshListSessions(ServerFTP.this.sessions);
-			}
-		});
+		refreshListSessions();
 	}
 	
 	public File getAppDirectory(){return this.activity.getFilesDir().getAbsoluteFile();}

@@ -47,6 +47,12 @@ public class DTPServer {
 		init();
 	}
 	
+	@Override
+	protected void finalize() throws Throwable {
+		stopServer();
+		super.finalize();
+	}
+	
 	/**
 	 * Si mode passive :
 	 * 	démarre serveur dft et attend connexion client
@@ -97,10 +103,10 @@ public class DTPServer {
 			//Socket client = data_server.accept();
 			client = this.getClientSocket();
 			File rep = null;
-			if(path.equals(""))
+			//if(path == null)
 				rep = new File(server.getAppDirectory()+RACINE_FTP+current_directory);
-			else//si chemin precisé
-				rep = new File(server.getAppDirectory()+RACINE_FTP+path);
+			//else//si chemin precisé
+				//rep = new File(server.getAppDirectory()+RACINE_FTP+path);
 			
 			Log.i("dtp-server","acessing to "+rep.getAbsolutePath());
 			if(rep.isDirectory()){
@@ -173,6 +179,7 @@ public class DTPServer {
 		Log.i("","mkdir :"+file.getAbsolutePath());
 		return file.mkdir();
 	}
+	
 	public String getParentDirectory() {
 		if(this.current_directory.equals("/"))
 			return current_directory;

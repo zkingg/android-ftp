@@ -90,7 +90,11 @@ public class UserFTPAction extends Thread {
 					}
 					
 				}else if(args[0].equals("QUIT")){//ACTION : EXIT : fermeture socket
+					reply(221, "Goodbye.");
 					exit = true;
+					
+				//}else if(args[0].equals("FEAT")){//ACTION : FEAT : Retourne command dispo
+					
 					
 				}else if(args[0].equals("SYST")){//ACTION : SYST : Info systeme
 					reply(215, " Android "+Build.DISPLAY);
@@ -126,10 +130,15 @@ public class UserFTPAction extends Thread {
 				}else if(args[0].equals("PWD")){//ACTION : PWD : Retourne chemin courant
 					reply(257,dtp_server.getCurrentDirectory()+" is current directory.");
 					
+				}else if(args[0].equals("CDUP")){//ACTION : CDUP : ce deplacer vers repertoire 
+					dtp_server.setCurrentDirectory(dtp_server.getParentDirectory());
+					reply(250, "CDUP command successful.");
+					
 				}else if(args[0].equals("LIST")){//ACTION : LIST : renvoye la liste des fichiers et répertoires présents dans le répertoire courant
 					reply(150,"Opening ASCII mode data connection for file list");
 					//recup list dossier
-					dtp_server.sendList();
+					
+					dtp_server.sendList(args[1]);
 					reply(226,"Transfer complete");
 					
 				}else if(args[0].equals("CWD")){//ACTION : CWD : Selection du repertoire de destination

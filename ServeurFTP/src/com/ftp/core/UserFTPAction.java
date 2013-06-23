@@ -146,6 +146,8 @@ public class UserFTPAction extends Thread {
 					reply(250, "CWD command successful.");
 					
 				}else if(args[0].equals("ABOR")){//ACTION : ABOR : Interuption d'un telechargement 
+					reply(500, "Command Not yet implemented :"+args[0]);
+					
 				}else if(args[0].equals("DELE")){//ACTION : DELE : supprime un fichier
 					if(dtp_server.removeFile(args[1]))
 						reply(250, "DELE command successful.");
@@ -165,7 +167,11 @@ public class UserFTPAction extends Thread {
 						reply(550,"Create new directory faillure");					
 					
 				}else if(args[0].equals("RETR")){//ACTION : RETR : Recuperation du fichier passer en paramétre
+					reply(500, "Command Not yet implemented :"+args[0]);
+					
 				}else if(args[0].equals("STOR")){//ACTION : STOR : Stockage du fichier donné, écrase si déjà exitant
+					reply(500, "Command Not yet implemented :"+args[0]);
+					
 				}else if(args[0].equals("RNFR")){//ACTION : RNFR : Renomage de fichier
 					String source = args[1];
 					if(dtp_server.fileExist(source)){
@@ -184,6 +190,8 @@ public class UserFTPAction extends Thread {
 						reply(550,"File not found");
 
 				}else if(args[0].equals("STOU")){//ACTION : STOU : Stockage du fichier donné, nom unique généré, nom retourné dans reponse
+					reply(500, "Command Not yet implemented :"+args[0]);
+					
 				}else if(args[0].equals("")){//si aucune action -- connexion interompue
 					Thread.sleep(3000);
 					exit = true;
@@ -193,6 +201,7 @@ public class UserFTPAction extends Thread {
 					reply(500, "Command Undefined :"+args[0]);
 				}
 			} catch (Exception e) {
+				reply(500, "Internal server error");
 				e.printStackTrace();
 			}
 		}

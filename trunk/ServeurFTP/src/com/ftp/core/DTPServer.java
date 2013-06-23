@@ -90,13 +90,18 @@ public class DTPServer {
 	 * Commande List : envoi la liste des repertoire au client ftp
 	 * @param path
 	 */
-	public void sendList(){
+	public void sendList(String path){
 		Socket client = null;
 		try {
 			String cmd ="";
 			//Socket client = data_server.accept();
 			client = this.getClientSocket();
-			File rep = new File(server.getAppDirectory()+RACINE_FTP+current_directory);
+			File rep = null;
+			if(path.equals(""))
+				rep = new File(server.getAppDirectory()+RACINE_FTP+current_directory);
+			else//si chemin precisé
+				rep = new File(server.getAppDirectory()+RACINE_FTP+path);
+			
 			Log.i("dtp-server","acessing to "+rep.getAbsolutePath());
 			if(rep.isDirectory()){
 				PrintStream p = new PrintStream(client.getOutputStream(),true);
@@ -167,5 +172,14 @@ public class DTPServer {
 		File file = new File(server.getAppDirectory()+RACINE_FTP+current_directory+"/"+dir);
 		Log.i("","mkdir :"+file.getAbsolutePath());
 		return file.mkdir();
+	}
+	public String getParentDirectory() {
+		if(this.current_directory.equals("/"))
+			return current_directory;
+		
+		String[] tmp = current_directory.split("/");
+		String dir_to_skip = tmp[tmp.length-1];
+		String parent = (String) current_directory.subSequence(0, current_directory.length()-dir_to_skip.length());
+		return parent.equals("")? "/" : parent;
 	}
 }

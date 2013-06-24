@@ -13,5 +13,6 @@
     <string name="username">Username</string>
     <string name="title_activity_file_list">FileList</string>
     <string name="hello_world">Hello world!</string>
+    <color name="darkgrey">#000000</color>
 
 </resources>

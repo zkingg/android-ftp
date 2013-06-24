@@ -65,10 +65,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		transferMode = (checkedRadioBtn == R.id.asciiRadioBtn ? FTP.ASCII_FILE_TYPE : FTP.BINARY_FILE_TYPE);
 		
 		new ConnectToFTPServer().execute();
-		
-		address = "ftp.coconutjuice.p.ht";
-		username = "u119470266";
-		password = "hMphnGRZhc";
 	}
 
 	private class ConnectToFTPServer extends AsyncTask<Void, Void, Void> { 

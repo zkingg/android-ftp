@@ -66,6 +66,7 @@ public class FileList extends Activity {
 			String[] filenames = null;
 			try {
 				filenames = ftp.listNames();
+				Log.d("ftpclient", ftp.getReplyString());
 			} catch (IOException e) {
 				Log.e("ftpclient", "could not get filenames");
 				e.printStackTrace();
@@ -75,6 +76,8 @@ public class FileList extends Activity {
 		
 		@Override
 		protected void onPostExecute(String[] result) {
+			if (result == null)
+				result = new String[] {};
 			ListView view = (ListView) findViewById(R.id.listView1);
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, result);
 			view.setAdapter(adapter);

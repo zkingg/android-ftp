@@ -18,6 +18,8 @@ public class NewUserActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.creation_user);
 		findViewById(R.id.button_new_user_valid).setOnClickListener(this);
+		Session s = new Session(this);
+		s.closeDB();
 		
 		this.login = (TextView) findViewById(R.id.editText_new_user_login);
 		this.mdp = (TextView) findViewById(R.id.editText_new_user_mdp);
@@ -35,9 +37,11 @@ public class NewUserActivity extends Activity implements OnClickListener {
 				Session s = new Session(this);
 				if(s.createUser(login.getText().toString(), mdp.getText().toString())){
 					Toast.makeText(this, "Creation reussite", Toast.LENGTH_SHORT).show();
+					s.closeDB();
 					finish();
 				}else{
 					Toast.makeText(this, "Echec creation nouvel utilisateur", Toast.LENGTH_SHORT).show();
+					s.closeDB();
 				}
 			}
 			

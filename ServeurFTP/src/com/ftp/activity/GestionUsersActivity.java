@@ -76,5 +76,6 @@ public class GestionUsersActivity extends Activity implements OnClickListener {
 	public void refreshListUser(){
 		Session s = new Session(this);
 		list_user.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,s.getListUser()));
+		s.closeDB();
 	}
 }

@@ -24,7 +24,7 @@ import android.widget.RadioGroup;
 public class MainActivity extends Activity implements OnClickListener {
 
 	private String address;
-	private int port;
+	private int port = 21;
 	private String username = "anonymous";
 	private String password = "";
 	private int transferMode = FTP.ASCII_FILE_TYPE;
@@ -65,6 +65,10 @@ public class MainActivity extends Activity implements OnClickListener {
 		transferMode = (checkedRadioBtn == R.id.asciiRadioBtn ? FTP.ASCII_FILE_TYPE : FTP.BINARY_FILE_TYPE);
 		
 		new ConnectToFTPServer().execute();
+		
+		address = "ftp.coconutjuice.p.ht";
+		username = "u119470266";
+		password = "hMphnGRZhc";
 	}
 
 	private class ConnectToFTPServer extends AsyncTask<Void, Void, Void> { 
@@ -81,6 +85,8 @@ public class MainActivity extends Activity implements OnClickListener {
 				ftp.connect(address, port);
 				Log.d("ftpclient", ftp.getReplyString());
 				ftp.login(username, password);
+				Log.d("ftpclient", ftp.getReplyString());
+				ftp.enterLocalPassiveMode();
 				Log.d("ftpclient", ftp.getReplyString());
 				ftp.setFileType(transferMode);
 				Log.d("ftpclient", ftp.getReplyString());

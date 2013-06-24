@@ -75,6 +75,7 @@ public class Session extends SQLiteOpenHelper {
 	}
 	
 	public boolean createUser(String login, String mdp){
+
 		ContentValues content = new ContentValues();
 		content.put("login", login);
 		content.put("mdp", Utils.md5(mdp));
@@ -90,7 +91,6 @@ public class Session extends SQLiteOpenHelper {
 		String[] col = new String[]{"login"};
 		
 		Cursor c  = db.query(TABLE_NAME, col, null, null, null , null, null);
-		c.moveToFirst();
 		while(c.moveToNext()){
 			liste_user.add(c.getString(0));
 		}
@@ -105,6 +105,10 @@ public class Session extends SQLiteOpenHelper {
 			return true;
 		else
 			return false;
+	}
+
+	public void closeDB() {
+		db.close();
 	}
 	
 }

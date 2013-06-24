@@ -195,7 +195,7 @@ public class UserFTPAction extends Thread {
 				}else if(args[0].equals("")){//si aucune action -- connexion interompue
 					Thread.sleep(3000);
 					exit = true;
-					
+				
 				}
 				else{//ACTION UNDEFINED 
 					reply(500, "Command Undefined :"+args[0]);
@@ -227,16 +227,26 @@ public class UserFTPAction extends Thread {
 		try {
 			String rep= new BufferedReader(new InputStreamReader(client_socket.getInputStream())).readLine();
 			//System.out.println("réponse :"+rep);
+			/*while(rep == null){
+				Thread.sleep(1000);
+				Log.v("","réponse :"+rep+" from "+client_socket.getInetAddress().getHostAddress()+":"+client_socket.getPort());
+
+				rep = reception();
+			}*/
+				
 			Log.v("","réponse :"+rep);
 			return rep!=null? rep : "";
 		}
 		catch (SocketTimeoutException e) {
-			return null;
+			
 		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
-		}
-
+		}/* catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
+		return null;
 	}
 	
 	public int reply(int code,String msg){

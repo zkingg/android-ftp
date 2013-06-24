@@ -23,13 +23,12 @@ import android.widget.RadioGroup;
 
 public class MainActivity extends Activity implements OnClickListener {
 
-	private String address = "10.0.2.2";
-	private int port = 11111;
+	private String address;
+	private int port;
 	private String username = "anonymous";
 	private String password = "";
-	private boolean anonymous = true;
 	private int transferMode = FTP.ASCII_FILE_TYPE;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,21 +45,24 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View view) {
-//		EditText ftpServerEditText = (EditText) findViewById(R.id.ftpServerEditText);
-//		EditText portEditText = (EditText) findViewById(R.id.portEditText);
-//		EditText usernameEditText = (EditText) findViewById(R.id.usernameEditText);
-//		EditText passwordEditText = (EditText) findViewById(R.id.passwordEditText);
-//		ToggleButton anonymousToggleButton = (ToggleButton) findViewById(R.id.anonymousToggleBtn);
-//		int checkedRadioBtn = ((RadioGroup) findViewById(R.id.transferModeRadioGrp))
-//				.getCheckedRadioButtonId();
-//
-//		 address = ftpServerEditText.getText().toString();
-//		 port = Integer.parseInt(portEditText.getText().toString());
-//		 username = usernameEditText.getText().toString();
-//		 password = passwordEditText.getText().toString();
-//		 anonymous = anonymousToggleButton.isChecked();
-//		 transferMode = (checkedRadioBtn == R.id.asciiRadioBtn ?
-//		 FTP.ASCII_FILE_TYPE : FTP.BINARY_FILE_TYPE);
+		EditText ftpServerEditText = (EditText) findViewById(R.id.ftpServerEditText);
+		EditText portEditText = (EditText) findViewById(R.id.portEditText);
+		EditText usernameEditText = (EditText) findViewById(R.id.usernameEditText);
+		EditText passwordEditText = (EditText) findViewById(R.id.passwordEditText);
+		int checkedRadioBtn = ((RadioGroup) findViewById(R.id.transferModeRadioGrp))
+				.getCheckedRadioButtonId();
+		
+		address = ftpServerEditText.getText().toString();
+		
+		if (!portEditText.getText().toString().isEmpty())
+			port = Integer.parseInt(portEditText.getText().toString());
+		
+		if (!usernameEditText.getText().toString().isEmpty())
+			username = usernameEditText.getText().toString();
+		
+		password = passwordEditText.getText().toString();
+		
+		transferMode = (checkedRadioBtn == R.id.asciiRadioBtn ? FTP.ASCII_FILE_TYPE : FTP.BINARY_FILE_TYPE);
 		
 		new ConnectToFTPServer().execute();
 	}
@@ -77,7 +79,11 @@ public class MainActivity extends Activity implements OnClickListener {
 				if (ftp.isConnected())
 					ftp.disconnect();
 				ftp.connect(address, port);
+				Log.d("ftpclient", ftp.getReplyString());
 				ftp.login(username, password);
+				Log.d("ftpclient", ftp.getReplyString());
+				ftp.setFileType(transferMode);
+				Log.d("ftpclient", ftp.getReplyString());
 				startActivity(intent);
 			} catch (SocketException e) {
 				Log.e("ftpclient", e.getMessage());

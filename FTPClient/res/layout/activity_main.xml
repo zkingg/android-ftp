@@ -44,13 +44,6 @@
         android:hint="@string/port"
         android:inputType="number" />
 
-    <ToggleButton
-        android:id="@+id/anonymousToggleBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textOn="@string/anonymousOn"
-        android:textOff="@string/anonymousOff" />
-
     <RadioGroup
         android:id="@+id/transferModeRadioGrp"
         android:layout_width="wrap_content"
@@ -63,19 +56,20 @@
             android:layout_height="wrap_content"
             android:text="@string/transfer_mode"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <RadioButton
-            android:id="@+id/binaryRadioBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/binary" />
-
-        <RadioButton
+		
+		<RadioButton
             android:id="@+id/asciiRadioBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:checked="true"
             android:text="@string/ascii" />
+       
+		<RadioButton
+            android:id="@+id/binaryRadioBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/binary" />
+
     </RadioGroup>
 
     <Button

@@ -4,6 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.net.ftp.FTPClient;
 
@@ -22,6 +26,10 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 
 public class FileList extends FragmentActivity implements CreateFileFragmentListener, CreateDirectoryFragmentListener {
+	
+	List<String> filenames = null;
+	ListView fileList = null;
+	ArrayAdapter<String> adapter = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +37,9 @@ public class FileList extends FragmentActivity implements CreateFileFragmentList
 		setContentView(R.layout.activity_file_list);
 		// Show the Up button in the action bar.
 		setupActionBar();
-		
+		filenames = new ArrayList<String>(); 
+		fileList = null;
+		adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, filenames);
 		new ShowFileList().execute();
 	}
 
@@ -72,14 +82,13 @@ public class FileList extends FragmentActivity implements CreateFileFragmentList
 		return super.onOptionsItemSelected(item);
 	}
 	
-	private class ShowFileList extends AsyncTask<Void, Void, String[]> {
+	private class ShowFileList extends AsyncTask<Void, Void, List<String>> {
 
 		@Override
-		protected String[] doInBackground(Void... params) {
+		protected List<String> doInBackground(Void... params) {
 			FTPClient ftp = FtpClient.getFtpClient();
-			String[] filenames = null;
 			try {
-				filenames = ftp.listNames();
+				filenames.addAll(Arrays.asList(ftp.listNames()));
 				Log.d("ftpclient", ftp.getReplyString());
 			} catch (IOException e) {
 				Log.e("ftpclient", "could not get filenames");
@@ -89,12 +98,10 @@ public class FileList extends FragmentActivity implements CreateFileFragmentList
 		}
 		
 		@Override
-		protected void onPostExecute(String[] result) {
-			if (result == null)
-				result = new String[] {};
-			ListView view = (ListView) findViewById(R.id.listView1);
-			ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, result);
-			view.setAdapter(adapter);
+		protected void onPostExecute(List<String> result) {
+			fileList = (ListView) findViewById(R.id.listView1);
+//			ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, result);
+			fileList.setAdapter(adapter);
 		}
 		
 	}
@@ -105,11 +112,18 @@ public class FileList extends FragmentActivity implements CreateFileFragmentList
 			FTPClient ftp = FtpClient.getFtpClient();
 			try {
 				ftp.makeDirectory(params[0]);
+				filenames.add(params[0]);
 				Log.d("ftpclient", ftp.getReplyString());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			Collections.sort(filenames);
+			adapter.notifyDataSetChanged();
 		}
 	}
 	
@@ -122,11 +136,18 @@ public class FileList extends FragmentActivity implements CreateFileFragmentList
 				InputStream in = new DataInputStream(new ByteArrayInputStream(test)); 
 				ftp.storeFile(params[0], in);
 				in.close();
+				filenames.add(params[0]);
 				Log.d("ftpclient", ftp.getReplyString());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			Collections.sort(filenames);
+			adapter.notifyDataSetChanged();
 		}
 	}
 	

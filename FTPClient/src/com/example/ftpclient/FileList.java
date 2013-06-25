@@ -14,6 +14,7 @@ import org.apache.commons.net.ftp.FTPClient;
 import com.example.ftpclient.CreateDirectoryDialogFragment.CreateDirectoryFragmentListener;
 import com.example.ftpclient.CreateFileDialogFragment.CreateFileFragmentListener;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -77,6 +78,9 @@ public class FileList extends FragmentActivity implements CreateFileFragmentList
 			return true;
 		case R.id.add_dir:
 			showCreateDirectoryDialog();
+			return true;
+		case R.id.deconnect:
+			new Deconnect().execute();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -148,6 +152,23 @@ public class FileList extends FragmentActivity implements CreateFileFragmentList
 		protected void onPostExecute(Void result) {
 			Collections.sort(filenames);
 			adapter.notifyDataSetChanged();
+		}
+	}
+	
+	private class Deconnect extends AsyncTask<Void, Void, Void> {
+		@Override
+		protected Void doInBackground(Void... params) {
+			FTPClient ftp = FtpClient.getFtpClient();
+			if (ftp.isConnected())
+				try {
+					ftp.disconnect();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+			startActivity(intent);
+			return null;
 		}
 	}
 	

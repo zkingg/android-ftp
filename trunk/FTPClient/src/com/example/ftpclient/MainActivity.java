@@ -6,8 +6,6 @@ import java.net.SocketException;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPReply;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
@@ -17,9 +15,8 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
-import android.widget.Switch;
-import android.widget.ToggleButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener {
 
@@ -45,6 +42,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View view) {
+		// Get form values then connect to the FTP server.
 		EditText ftpServerEditText = (EditText) findViewById(R.id.ftpServerEditText);
 		EditText portEditText = (EditText) findViewById(R.id.portEditText);
 		EditText usernameEditText = (EditText) findViewById(R.id.usernameEditText);
@@ -54,9 +52,11 @@ public class MainActivity extends Activity implements OnClickListener {
 		
 		address = ftpServerEditText.getText().toString();
 		
+		// if the port field is not empty, we can parse it
 		if (!portEditText.getText().toString().isEmpty())
 			port = Integer.parseInt(portEditText.getText().toString());
 		
+		// if the username field is filled, use it instead of 'anonymous'
 		if (!usernameEditText.getText().toString().isEmpty())
 			username = usernameEditText.getText().toString();
 		
@@ -69,6 +69,8 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	private class ConnectToFTPServer extends AsyncTask<Void, Void, Void> { 
 
+		private boolean error = false;
+		
 		@Override
 		protected Void doInBackground(Void... params) {
 			FTPClient ftp = FtpClient.getFtpClient();
@@ -88,13 +90,23 @@ public class MainActivity extends Activity implements OnClickListener {
 				Log.d("ftpclient", ftp.getReplyString());
 				startActivity(intent);
 			} catch (SocketException e) {
+				error = true;
 				Log.e("ftpclient", e.getMessage());
 				e.printStackTrace();
 			} catch (IOException e) {
+				error = true;
 				Log.e("ftpclient", e.getMessage());
 				e.printStackTrace();
 			} 
 			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			if (error) {
+				Toast toast = Toast.makeText(getApplicationContext(), "Problème lors de la connexion", Toast.LENGTH_SHORT);
+				toast.show();
+			}
 		}
 	}
 

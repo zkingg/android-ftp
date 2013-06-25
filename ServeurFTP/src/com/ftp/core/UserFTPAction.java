@@ -93,8 +93,10 @@ public class UserFTPAction extends Thread {
 					reply(221, "Goodbye.");
 					exit = true;
 					
-				//}else if(args[0].equals("FEAT")){//ACTION : FEAT : Retourne command dispo
-					
+				}else if(args[0].equals("FEAT")){//ACTION : FEAT : Retourne command dispo
+					envoi("211-Extensions supported");
+					envoi(" PASV");
+					reply(211,"End");
 					
 				}else if(args[0].equals("SYST")){//ACTION : SYST : Info systeme
 					reply(215, " Android "+Build.DISPLAY);
@@ -114,17 +116,17 @@ public class UserFTPAction extends Thread {
 					String[] inet_address = args[1].split("\\,");
 					String ip = inet_address[0]+"."+inet_address[1]+"."+inet_address[2]+"."+inet_address[3];
 					
-					int port;
 					try {
-						port = Integer.parseInt(inet_address[4])*256 + Integer.parseInt(inet_address[5]);
+						int port = Integer.parseInt(inet_address[4])*256 + Integer.parseInt(inet_address[5]);
+						dtp_server.setIp(ip);
+						dtp_server.setPort(port);
+						dtp_server.setTransfertMode(DTPServer.ACTIVE_MODE);
+						reply(200, "PORT command successful.");
 					} catch (Exception e) {
-						port = 0;
+						reply(500, "Wrong parameters given .");
 					}
 					
-					dtp_server.setIp(ip);
-					dtp_server.setPort(port);
-					dtp_server.setTransfertMode(DTPServer.ACTIVE_MODE);
-					reply(200, "PORT command successful.");
+
 					
 				/** File explorer commands **/	
 				}else if(args[0].equals("PWD")){//ACTION : PWD : Retourne chemin courant
@@ -137,9 +139,14 @@ public class UserFTPAction extends Thread {
 				}else if(args[0].equals("LIST")){//ACTION : LIST : renvoye la liste des fichiers et répertoires présents dans le répertoire courant
 					reply(150,"Opening ASCII mode data connection for file list");
 					//recup list dossier
-					
 					dtp_server.sendList(args[1]);
 					reply(226,"Transfer complete");
+					
+				}else if(args[0].equals("NLST")){//ACTION : NLST : renvoye la liste des fichiers et répertoires présents dans le répertoire courant
+					reply(150,"Opening ASCII mode data connection for file list");
+					//recup list dossier
+					dtp_server.sendList(null);
+					reply(226,"Transfer complete");	
 					
 				}else if(args[0].equals("CWD")){//ACTION : CWD : Selection du repertoire de destination
 					dtp_server.setCurrentDirectory(args[1]);
@@ -213,6 +220,9 @@ public class UserFTPAction extends Thread {
 		Log.i("ftp-client","client "+session.getIp()+" has disconected");
 	}
 	
+	/*
+	 * Envoi les données sur DI du client
+	 */
 	private void envoi(String str){
 		try {
 			PrintStream p = new PrintStream(client_socket.getOutputStream());
@@ -223,6 +233,9 @@ public class UserFTPAction extends Thread {
 		}	
 	}
 	
+	/*
+	 * Recupere les données du client
+	 */
 	private String reception(){
 		try {
 			String rep= new BufferedReader(new InputStreamReader(client_socket.getInputStream())).readLine();
@@ -249,8 +262,13 @@ public class UserFTPAction extends Thread {
 		return null;
 	}
 	
+	/**
+	 * Envoi un code de retour avec un msg personalisé
+	 * @param code : code de retour
+	 * @param msg
+	 * @return code de retour
+	 */
 	public int reply(int code,String msg){
-		//this.writer.println(code+" "+msg);
 		envoi(code+" "+msg);
 		Log.i("ftp-client","reply code "+code+" to "+session.getIp());
 		return code;

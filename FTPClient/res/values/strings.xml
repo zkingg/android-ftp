@@ -13,6 +13,9 @@
     <string name="username">Username</string>
     <string name="title_activity_file_list">FileList</string>
     <string name="hello_world">Hello world!</string>
-    <color name="darkgrey">#000000</color>
+    <string name="add_file">Add file</string>
+    <string name="add_dir">Add directory</string>
+    <string name="filename">filename</string>
+    <string name="directory_name">directory\'s name</string>
 
 </resources>

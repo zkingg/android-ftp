@@ -93,7 +93,7 @@ public class MainActivity extends Activity implements OnClickListener {
 			} catch (IOException e) {
 				Log.e("ftpclient", e.getMessage());
 				e.printStackTrace();
-			}
+			} 
 			return null;
 		}
 	}

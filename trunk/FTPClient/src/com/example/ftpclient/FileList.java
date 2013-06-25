@@ -5,15 +5,16 @@ import java.io.IOException;
 import org.apache.commons.net.ftp.FTPClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 
-public class FileList extends Activity {
+public class FileList extends FragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,15 @@ public class FileList extends Activity {
 			//
 			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
 			//
-			NavUtils.navigateUpFromSameTask(this);
+			NavUtils.navigateUpFromSameTask(this);			
+			return true;
+		case R.id.add_file:
+			DialogFragment addFileDialog = new CreateFileDialogFragment();
+			addFileDialog.show(getSupportFragmentManager(), "new file");
+			return true;
+		case R.id.add_dir:
+			DialogFragment addDirDialog = new CreateDirectoryDialogFragment();
+			addDirDialog.show(getSupportFragmentManager(), "new directory");
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -83,6 +92,33 @@ public class FileList extends Activity {
 			view.setAdapter(adapter);
 		}
 		
+	}
+	
+	private class AddDirectory extends AsyncTask<String, Void, Void> {
+		@Override
+		protected Void doInBackground(String... params) {
+			FTPClient ftp = FtpClient.getFtpClient();
+			try {
+				ftp.makeDirectory(params[0]);
+				Log.d("ftpclient", ftp.getReplyString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+	}
+	
+	private class AddFile extends AsyncTask<String, Void, Void> {
+		@Override
+		protected Void doInBackground(String... params) {
+			FTPClient ftp = FtpClient.getFtpClient();
+			try {
+				ftp.stor(params[0]);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
 	}
 
 }

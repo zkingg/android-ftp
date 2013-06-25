@@ -17,5 +17,6 @@
     <string name="add_dir">Add directory</string>
     <string name="filename">filename</string>
     <string name="directory_name">directory\'s name</string>
+    <string name="deconnect">Deconnect</string>
 
 </resources>

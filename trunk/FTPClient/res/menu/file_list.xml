@@ -7,5 +7,6 @@
         android:title="@string/action_settings"/>
     <item android:id="@+id/add_file" android:title="@string/add_file" android:showAsAction="always"></item>
     <item android:id="@+id/add_dir" android:title="@string/add_dir" android:showAsAction="always"></item>
+    <item android:id="@+id/deconnect" android:title="@string/deconnect" android:showAsAction="never"></item>
 
 </menu>

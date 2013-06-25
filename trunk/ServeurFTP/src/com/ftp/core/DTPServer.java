@@ -1,14 +1,12 @@
 package com.ftp.core;
 
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import android.util.Log;
 
@@ -29,7 +27,12 @@ public class DTPServer {
 	//I - image (binary data) 
 	//L - local format
 	
-	public void setCurrentDirectory(String directory){this.current_directory = directory;}
+	public void setCurrentDirectory(String directory){
+		if(directory.charAt(0) == '/')//chemin absolu
+			this.current_directory = directory;
+		else//chemin relatif
+			this.current_directory += "/"+directory;
+	}
 	public String getCurrentDirectory(){return this.current_directory;}	
 	public void setTransfertMode(int mode){this.transfert_mode = mode;}
 	public int getTransfertMode(){return this.transfert_mode;}
@@ -100,11 +103,10 @@ public class DTPServer {
 		Socket client = null;
 		try {
 			String cmd ="";
-			//Socket client = data_server.accept();
 			client = this.getClientSocket();
 			File rep = null;
 			//if(path == null)
-				rep = new File(server.getAppDirectory()+RACINE_FTP+current_directory);
+				rep = getFileWithSpace(server.getAppDirectory()+RACINE_FTP+current_directory);
 			//else//si chemin precisé
 				//rep = new File(server.getAppDirectory()+RACINE_FTP+path);
 			
@@ -124,6 +126,8 @@ public class DTPServer {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
 		}finally{
 			stopServer();
 			try {if(client != null)client.close();}
@@ -132,8 +136,13 @@ public class DTPServer {
 	}
 	
 	public boolean removeDirectory(String dir) {
-		File file = new File(server.getAppDirectory()+RACINE_FTP+dir);
-		return removeDirectoryAndFile(file);
+		try {
+			File file = getFileWithSpace(server.getAppDirectory()+RACINE_FTP+dir);
+			return removeDirectoryAndFile(file);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	public static boolean removeDirectoryAndFile(File dir){
@@ -150,9 +159,14 @@ public class DTPServer {
 	}
 
 	public boolean removeFile(String file_delete) {
-		File file = new File(server.getAppDirectory()+RACINE_FTP+file_delete);
-		Log.i("","remove :"+file.getAbsolutePath());
-		return removeDirectoryAndFile(file);
+		try {
+			File file = getFileWithSpace(server.getAppDirectory()+RACINE_FTP+file_delete);
+			Log.i("","remove :"+file.getAbsolutePath());
+			return removeDirectoryAndFile(file);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	private void init(){
@@ -163,23 +177,48 @@ public class DTPServer {
 	}
 	
 	public boolean fileExist(String file){
-		File f = new File(server.getAppDirectory()+RACINE_FTP+current_directory+"/"+file);
-		return f.isDirectory() || f.isFile();
+		try {
+			File f = getFileWithSpace(server.getAppDirectory()+RACINE_FTP+current_directory+"/"+file);
+			return f.isDirectory() || f.isFile();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	public boolean renameFile(String source,String destination){
-		File file_src = new File(server.getAppDirectory()+RACINE_FTP+current_directory+"/"+source);
-		File file_dst = new File(server.getAppDirectory()+RACINE_FTP+current_directory+"/"+destination);
-		Log.i("","rename :"+file_src+" => "+file_dst);
-		return file_src.renameTo(file_dst);
+		try {
+			File file_src = getFileWithSpace(server.getAppDirectory()+RACINE_FTP+current_directory+"/"+source);
+			File file_dst = getFileWithSpace(server.getAppDirectory()+RACINE_FTP+current_directory+"/"+destination);
+			Log.i("","rename :"+file_src+" => "+file_dst);
+			return file_src.renameTo(file_dst);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	public boolean createDirectory(String dir) {
-		File file = new File(server.getAppDirectory()+RACINE_FTP+current_directory+"/"+dir);
-		Log.i("","mkdir :"+file.getAbsolutePath());
-		return file.mkdir();
+		// File file = new
+		// File(server.getAppDirectory()+RACINE_FTP+current_directory+"/"+dir);
+		
+		try {
+			String path = server.getAppDirectory() + RACINE_FTP + current_directory	+ "/" + dir;
+			File file = getFileWithSpace(path);
+			Log.i("", "mkdir :" + file.getAbsolutePath());
+			return file.mkdir();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			return false;
+		}	
 	}
 	
+	public static File getFileWithSpace(String path) throws URISyntaxException {
+		URI outputURI = new URI(("file:///" + path.replaceAll(" ", "%20")));
+		File file = new File(outputURI);
+		return file;
+	}
+
 	public String getParentDirectory() {
 		if(this.current_directory.equals("/"))
 			return current_directory;

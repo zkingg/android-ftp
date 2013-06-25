@@ -7,6 +7,7 @@ import android.preference.PreferenceActivity;
  * Activité des preférences, affiche le menu de configuration
  */
 public class Preferences extends PreferenceActivity {
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub

@@ -1,9 +1,7 @@
 package com.ftp.activity;
 
 import java.io.File;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,9 +16,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.ftp.core.DTPServer;
-import com.ftp.core.Session;
 
 public class FtpExplorerActivity extends Activity implements OnItemClickListener {
 	private ArrayList<File> list_files;
@@ -115,7 +111,6 @@ public class FtpExplorerActivity extends Activity implements OnItemClickListener
 		
 		switch(item.getItemId()){
 		case R.id.menu_item_delete:
-			Session s = new Session(this);
 			if(DTPServer.removeDirectoryAndFile(dir)){
 				Toast.makeText(this, "Suppression réussite", Toast.LENGTH_SHORT).show();
 				refreshListFile();

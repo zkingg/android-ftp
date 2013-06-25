@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.HashMap;
-
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -63,7 +62,7 @@ public class ServerFTP {
 					Log.i("ftp-server","server started to listening to client");
 					while(! socket_server.isClosed())
 					{
-					    UserFTPAction action =new UserFTPAction(ServerFTP.this, socket_server.accept());//prise en charge des connexion
+					    new UserFTPAction(ServerFTP.this, socket_server.accept());//prise en charge des connexion
 					}
 				}
 				catch(SocketException e){} 

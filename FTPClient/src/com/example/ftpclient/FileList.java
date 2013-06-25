@@ -1,8 +1,15 @@
 package com.example.ftpclient;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.net.ftp.FTPClient;
+
+import com.example.ftpclient.CreateDirectoryDialogFragment.CreateDirectoryFragmentListener;
+import com.example.ftpclient.CreateFileDialogFragment.CreateFileFragmentListener;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +21,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 
-public class FileList extends FragmentActivity {
+public class FileList extends FragmentActivity implements CreateFileFragmentListener, CreateDirectoryFragmentListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +63,10 @@ public class FileList extends FragmentActivity {
 			NavUtils.navigateUpFromSameTask(this);			
 			return true;
 		case R.id.add_file:
-			DialogFragment addFileDialog = new CreateFileDialogFragment();
-			addFileDialog.show(getSupportFragmentManager(), "new file");
+			showCreateFileDialog();
 			return true;
 		case R.id.add_dir:
-			DialogFragment addDirDialog = new CreateDirectoryDialogFragment();
-			addDirDialog.show(getSupportFragmentManager(), "new directory");
+			showCreateDirectoryDialog();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -113,12 +118,41 @@ public class FileList extends FragmentActivity {
 		protected Void doInBackground(String... params) {
 			FTPClient ftp = FtpClient.getFtpClient();
 			try {
-				ftp.stor(params[0]);
+				byte[] test = new byte[] {};
+				InputStream in = new DataInputStream(new ByteArrayInputStream(test)); 
+				ftp.storeFile(params[0], in);
+				in.close();
+				Log.d("ftpclient", ftp.getReplyString());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			return null;
 		}
+	}
+	
+	public void showCreateFileDialog() {
+		DialogFragment addFileDialog = new CreateFileDialogFragment();
+		addFileDialog.show(getSupportFragmentManager(), "CreateFileDialogFragment");
+	}
+	
+	public void showCreateDirectoryDialog() {
+		DialogFragment addDirDialog = new CreateDirectoryDialogFragment();
+		addDirDialog.show(getSupportFragmentManager(), "CreateDirectoryDialogFragment");
+	}
+
+	@Override
+	public void onDialogPositiveClick(DialogFragment dialog, String s) {
+		if (dialog instanceof CreateFileDialogFragment) {
+			new AddFile().execute(new String[] { s });
+		}
+		else {
+			new AddDirectory().execute(new String[] { s });
+		}
+	}
+
+	@Override
+	public void onDialogNegativeClick(DialogFragment dialog) {
+		// Cancel button was clicked, do nothing.
 	}
 
 }

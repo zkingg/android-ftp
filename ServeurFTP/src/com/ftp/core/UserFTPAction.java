@@ -1,14 +1,9 @@
 package com.ftp.core;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
@@ -130,7 +125,7 @@ public class UserFTPAction extends Thread {
 					
 				/** File explorer commands **/	
 				}else if(args[0].equals("PWD")){//ACTION : PWD : Retourne chemin courant
-					reply(257,dtp_server.getCurrentDirectory()+" is current directory.");
+					reply(257,"\""+dtp_server.getCurrentDirectory()+"\" is current directory.");
 					
 				}else if(args[0].equals("CDUP")){//ACTION : CDUP : ce deplacer vers repertoire 
 					dtp_server.setCurrentDirectory(dtp_server.getParentDirectory());

@@ -14,7 +14,6 @@ import android.util.Log;
  */
 public class Session extends SQLiteOpenHelper {
 	private SQLiteDatabase db;
-	private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	private static final int DATABASE_VERSION = 1;
 	private static final String TABLE_NAME = "Users";
 	private static final String TABLE_CREATE =
